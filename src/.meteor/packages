@@ -25,3 +25,4 @@ ostrio:files
 ostrio:autoform-files
 ground:db
 dburles:mongo-collection-instances@0.3.5
+mouse0270:bootstrap-notify

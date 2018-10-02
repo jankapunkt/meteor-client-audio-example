@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import '../startup/both/schema'
+import '../startup/both/files'
+
 import '../imports/ui/stream/stream'
 import '../imports/ui/upload/upload'
 
