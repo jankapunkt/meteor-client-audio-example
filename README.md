@@ -5,7 +5,7 @@ Exploring an efficient way of caching audio files for client devices (browser, m
 
 ## Features to explore:
 
-* [ ] Upload using meteor files
+* [x] Upload using meteor files
 * [ ] Stream audio files from gridfs
 * [ ] Playback using howler
 * [ ] Cache using ground db
@@ -29,13 +29,12 @@ Caching the file locally, if no local file could be found by given hash.
 
 [ostrio:autoform-files](https://github.com/VeliovGroup/Meteor-Files) - files upload form
 
-[ground:db](https://github.com/GroundMeteor/db) - client side cache
-
 [fortawesome:fontawesome]() - icon font set
 
 
 **NPM Packages**
 
+[localforage](https://github.com/localForage/localForage) - cache files in the browser
 
 [bootstrap](https://github.com/twbs/bootstrap) - grid design for ui
 
