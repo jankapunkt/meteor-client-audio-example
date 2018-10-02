@@ -13,12 +13,6 @@ export const SoundFiles = new FilesCollection({
   }
 })
 
-if (Meteor.isClient) {
-  Meteor.subscribe('files.soundFiles.all')
-}
-
-if (Meteor.isServer) {
-  Meteor.publish('files.soundFiles.all', () => {
-    return SoundFiles.collection.find({})
-  })
-}
+SoundFiles.publications = {}
+SoundFiles.publications.all = {}
+SoundFiles.publications.all.name = 'files.soundFiles.all'

@@ -34,6 +34,10 @@ Template.upload.events({
     Meteor.call(Sounds.methods.create.name, {fileId}, callback({
       onErr (err) {
         console.log(err)
+      },
+      onRes (res) {
+        AutoForm.resetForm('uploadForm')
+        console.log(res)
       }
     }))
   }

@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import '../startup/both/schema'
 import '../startup/both/files'
+import '../startup/client/subscriptions'
 
 import '../imports/ui/stream/stream'
 import '../imports/ui/upload/upload'
@@ -26,7 +27,7 @@ Template.body.helpers({
 })
 
 Template.body.events({
-  'click .tab'(event, tInstance) {
+  'click .tab' (event, tInstance) {
     event.preventDefault()
     const target = tInstance.$(event.currentTarget).data('target')
     tInstance.state.set('active', target)

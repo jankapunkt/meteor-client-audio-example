@@ -11,8 +11,8 @@ Sounds.methods.create = {}
 Sounds.methods.create.name = 'sounds.method.create'
 Sounds.methods.create.schema = {fileId: String}
 Sounds.methods.get = {}
-Sounds.methods.create.name = 'sounds.method.get'
-Sounds.methods.create.schema = {fileId: String}
+Sounds.methods.get.name = 'sounds.method.get'
+Sounds.methods.get.schema = {fileId: String}
 
 Sounds.publications = {}
 Sounds.publications.all = {}
