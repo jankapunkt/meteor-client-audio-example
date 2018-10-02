@@ -13,7 +13,7 @@ Exploring an efficient way of caching audio files for client devices (browser, m
 
 ## Approach / concept
 
-* No initial download on app download or app init.
+* No initial download on app download or app init.latest
 * Download (better: steam) file (plus get hash signature), once on the first usage is demanded. 
 Caching the file locally, if no local file could be found by given hash.  
 * Playing the local file, if a local file could be found by given hash.
