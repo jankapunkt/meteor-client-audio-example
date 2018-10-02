@@ -24,3 +24,4 @@ aldeed:autoform
 ostrio:files
 ostrio:autoform-files
 ground:db
+dburles:mongo-collection-instances@0.3.5

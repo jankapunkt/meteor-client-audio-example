@@ -1,22 +1,32 @@
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating'
+import { ReactiveDict } from 'meteor/reactive-dict'
+import '../startup/both/schema'
+import '../imports/ui/stream/stream'
+import '../imports/ui/upload/upload'
 
-import './main.html';
+import './main.html'
 
-Template.hello.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
-});
+const States = {
+  stream: 'stream',
+  upload: 'upload'
+}
 
-Template.hello.helpers({
-  counter() {
-    return Template.instance().counter.get();
-  },
-});
+Template.body.onCreated(function onBodyCreated () {
+  const instance = this
+  instance.state = new ReactiveDict()
+  instance.state.set('active', States.stream)
+})
 
-Template.hello.events({
-  'click button'(event, instance) {
-    // increment the counter when button is clicked
-    instance.counter.set(instance.counter.get() + 1);
-  },
-});
+Template.body.helpers({
+  active (key) {
+    return Template.instance().state.get('active') === key
+  }
+})
+
+Template.body.events({
+  'click .tab'(event, tInstance) {
+    event.preventDefault()
+    const target = tInstance.$(event.currentTarget).data('target')
+    tInstance.state.set('active', target)
+  }
+})
