@@ -6,10 +6,11 @@ Exploring an efficient way of caching audio files for client devices (browser, m
 ## Features to explore:
 
 * [x] Upload using meteor files
-* [ ] Stream audio files from gridfs
-* [ ] Playback using howler
-* [ ] Cache using ground db
-
+* [x] Stream audio files from gridfs
+* [x] Playback using howler
+* [ ] Extract streamed buffer
+* [ ] Cache buffer using ~~ground db~~ localForage
+* [ ] Play from cached buffer, if exists
 
 ## Approach / concept
 

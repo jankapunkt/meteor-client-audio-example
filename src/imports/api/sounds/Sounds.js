@@ -5,6 +5,7 @@ export const Sounds = {}
 
 Sounds.collection = new Mongo.Collection('sounds')
 Sounds.files = SoundFiles
+Sounds.usingWebAudio = void 0
 
 Sounds.methods = {}
 Sounds.methods.create = {}
