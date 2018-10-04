@@ -54,7 +54,7 @@ Template.stream.events({
     }
 
     const link = tInstance.$(event.currentTarget).data('link')
-
+    console.log(link)
     tInstance.state.set('cue', 0)
     window.clearInterval(timerId)
 
@@ -63,7 +63,7 @@ Template.stream.events({
     } else {
       const sound = new Howl({
         src: [link],
-        //html5: true,
+        html5: true,
         onload: function () {
           console.log('onload', this)
         },
