@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Howl, Howler } from 'howler'
 
@@ -6,14 +7,13 @@ import { SoundFiles } from '../../api/sounds/SoundFiles'
 
 import './stream.html'
 
-
-
 const howls = {}
 
 Template.stream.onCreated(function onStreamCreated () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.state.set('current', null)
+  instance.state.set('cue', 0)
 })
 
 Template.stream.helpers({
@@ -30,10 +30,19 @@ Template.stream.helpers({
   isCached () {
     return false
   },
-  progress () {
-    return 50
+  current () {
+    return Template.instance().state.get('current')
   },
+  getSound (fileId) {
+    return howls[fileId]
+  },
+  progress (sound) {
+    const cue = Template.instance().state.get('cue')
+    return (cue / sound._duration) * 100
+  }
 })
+
+let timerId
 
 Template.stream.events({
   'click .play-button' (event, tInstance) {
@@ -46,6 +55,9 @@ Template.stream.events({
 
     const link = tInstance.$(event.currentTarget).data('link')
 
+    tInstance.state.set('cue', 0)
+    window.clearInterval(timerId)
+
     if (howls[fileId]) {
       howls[fileId].play()
     } else {
@@ -55,15 +67,22 @@ Template.stream.events({
         onload: function () {
           console.log('onload', this)
         },
-        onend: function() {
-          console.log('Ended');
+        onend: function () {
+          console.log('Ended')
+          window.clearInterval(timerId)
         },
-        onplay: function() {
-          console.log('Playing');
+        onstop: function () {
+          window.clearInterval(timerId)
         },
-        onpause: function() {
-          console.log('Paused');
-        }
+        onplay: function () {
+          timerId = window.setInterval(() => {
+            const cue = tInstance.state.get('cue')
+            tInstance.state.set('cue', cue + 1)
+          }, 1000)
+        },
+        onpause: function () {
+          console.log('Paused')
+        },
       })
       console.log(sound)
       howls[fileId] = sound

@@ -1,4 +1,11 @@
 <template name="stream">
+	{{#with getSound current}}
+		<div class="progress" style="height: 5px;">
+			{{#with progress this}}
+			<div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}" aria-valuemin="0" aria-valuemax="100"></div>
+			{{/with}}
+		</div>
+	{{/with}}
 	<table class="table table-hover outer-border">
 		<thead>
 		<tr>
