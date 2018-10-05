@@ -1,7 +1,7 @@
 /* global Blob fetch */
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
-import { Howl, Howler } from 'howler'
+import { Howl, Howler } from '../../api/howler/client/howler'
 
 import { SoundCache } from '../../api/sounds/SoundCache'
 import { Sounds } from '../../api/sounds/Sounds'
@@ -9,6 +9,7 @@ import { SoundFiles } from '../../api/sounds/SoundFiles'
 
 import './stream.html'
 import { callback, errorCallback } from '../helpers/callbacks'
+import StreamLoader from '../../api/stream/StreamLoader'
 
 const howls = {}
 
@@ -18,8 +19,6 @@ Template.stream.onCreated(function onStreamCreated () {
   instance.state.set('current', null)
   instance.state.set('cue', 0)
 
-  Howler.usingWebAudio = !!(window.AudioContext || window.webkitAudioContext)
-  console.log(Howler)
 })
 
 Template.stream.helpers({
@@ -76,8 +75,35 @@ Template.stream.events({
 
     tInstance.state.set('loaded', false)
 
-    SoundCache.load(fileId, (err, res) => {
+    const audioContext = new AudioContext()
+    const loader = new StreamLoader(link)
+
+    // Creates an AudioContext and AudioContextBuffer
+    loader.on(StreamLoader.event.response, (data) => {
+      console.log(data.response.byteLength)
+      const floats = new Float32Array(data.response)
+      const audioBuffer = audioContext.createBuffer(1, 2048, 4410)
+      audioBuffer.getChannelData(0).set(floats)
+      const sourceNode = new AudioBufferSourceNode(audioContext, {buffer: audioBuffer})
+      sourceNode.connect(audioContext.destination)
+      sourceNode.start(0)
+    })
+
+    loader.once(StreamLoader.event.complete, (data) => {
+      console.log('complete', data)
+      const blob = new Blob(Object.values(data), {type: fileType})
+      console.log(blob)
+      //const objectURL = URL.createObjectURL(blob)
+      //console.log(objectURL)
+    })
+    loader.load()
+    return
+
+    SoundCache.load(fileId, (err, res, type) => {
       if (err) errorCallback(err)
+      if (res) {
+        console.log('file exists', type, res.byteLength)
+      }
     })
     const sound = new Howl({
       src: [link],
@@ -92,7 +118,8 @@ Template.stream.events({
         // it to our internal cache
         const node = sound._sounds[0]._node
         $(node).on('canplaythrough', function (e) {
-
+          const buffer = sound._getBuffer()
+          console.log(buffer)
         })
       },
       onend: function () {

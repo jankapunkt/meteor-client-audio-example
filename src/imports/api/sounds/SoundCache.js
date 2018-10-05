@@ -24,13 +24,9 @@ SoundCache.init = function () {
 }
 
 SoundCache.save = function (key, value, callback) {
-  localforage.setItem(key, value)
-  .then(res => callback(null, res))
-  .catch(er => callback(er, null))
+  localforage.setItem(key, value).then(res => callback(null, res)).catch(er => callback(er, null))
 }
 
 SoundCache.load = function (key, callback) {
-  localforage.getItem(key)
-  .then(res => callback(null, res))
-  .catch(er => callback(er, null))
+  localforage.getItem(key).then(res => callback(null, res)).catch(er => callback(er, null))
 }
