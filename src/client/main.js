@@ -3,6 +3,7 @@ import { ReactiveDict } from 'meteor/reactive-dict'
 import '../startup/both/schema'
 import '../startup/both/files'
 import '../startup/client/subscriptions'
+import '../startup/client/services'
 
 import '../imports/ui/stream/stream'
 import '../imports/ui/upload/upload'

@@ -10,6 +10,7 @@ import { SoundFiles } from '../../api/sounds/SoundFiles'
 import './stream.html'
 import { callback, errorCallback } from '../helpers/callbacks'
 import StreamLoader from '../../api/stream/StreamLoader'
+import { getAudioData } from '../../api/stream/BufferStream'
 
 const howls = {}
 
@@ -20,6 +21,8 @@ Template.stream.onCreated(function onStreamCreated () {
   instance.state.set('cue', 0)
 
 })
+
+// Meteor.connection._stream.on('message', console.log.bind(console))
 
 Template.stream.helpers({
   sounds () {
@@ -75,29 +78,69 @@ Template.stream.events({
 
     tInstance.state.set('loaded', false)
 
-    const audioContext = new AudioContext()
-    const loader = new StreamLoader(link)
+
+/*
+
 
     // Creates an AudioContext and AudioContextBuffer
-    loader.on(StreamLoader.event.response, (data) => {
-      console.log(data.response.byteLength)
-      const floats = new Float32Array(data.response)
-      const audioBuffer = audioContext.createBuffer(1, 2048, 4410)
-      audioBuffer.getChannelData(0).set(floats)
-      const sourceNode = new AudioBufferSourceNode(audioContext, {buffer: audioBuffer})
-      sourceNode.connect(audioContext.destination)
-      sourceNode.start(0)
+    var audioCtx = new AudioContext();
+    var startTime = 0;
+    const loader = new StreamLoader(link, {step: audioCtx.sampleRate/2})
+    loader.on(StreamLoader.event.response, (audioChunk) => {
+      // Create/set audio buffer for each chunk
+      var audioBuffer = audioCtx.createBuffer(2, audioCtx.sampleRate/2, audioCtx.sampleRate);
+      audioBuffer.getChannelData(0).set(audioChunk);
+
+      var source = audioCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioCtx.destination);
+      source.start(0)
+      startTime += audioBuffer.duration;
     })
 
     loader.once(StreamLoader.event.complete, (data) => {
       console.log('complete', data)
       const blob = new Blob(Object.values(data), {type: fileType})
       console.log(blob)
-      //const objectURL = URL.createObjectURL(blob)
-      //console.log(objectURL)
+      const objectURL = URL.createObjectURL(blob)
+      console.log(objectURL)
     })
     loader.load()
-    return
+
+    fetch(link).then((response) => {
+      console.log(response)
+      const reader = response.body.getReader();
+      const stream = new ReadableStream({
+        start(controller) {
+          // The following function handles each data chunk
+          function push() {
+            // "done" is a Boolean and value a "Uint8Array"
+            reader.read().then(({ done, value }) => {
+              // Is there no more data to read?
+              if (done) {
+                // Tell the browser that we have finished sending data
+                controller.close();
+                return;
+              }
+
+              // Get the data and send it to the browser via the controller
+              controller.enqueue(value);
+              push();
+            });
+          };
+
+          push();
+        }
+      });
+
+      return new Response(stream, { headers: { "Content-Type": "text/html" } });
+    });
+
+
+*/
+
+
+
 
     SoundCache.load(fileId, (err, res, type) => {
       if (err) errorCallback(err)
@@ -105,6 +148,8 @@ Template.stream.events({
         console.log('file exists', type, res.byteLength)
       }
     })
+
+    /*
     const sound = new Howl({
       src: [link],
       html5: true,
@@ -142,10 +187,57 @@ Template.stream.events({
       onpause: function () {
         // console.log('Paused')
       },
-    })
+    })*/
+
+    function getAllEvents(element) {
+      var result = [];
+      for (var key in element) {
+        if (key.indexOf('on') === 0) {
+          result.push(key.slice(2));
+        }
+      }
+      return result.join(' ');
+    }
+
+    const sound = new Audio()
+
+
+    var el = $(sound);
+    el.bind(getAllEvents(el[0]), function(e) {
+      /* insert your code */
+      console.log(e.type)
+    });
+
+
+    sound.onprogress = function(...args) {
+      console.log("progress", ...args);
+    };
+    sound.oncanplay = function (...args) {
+      console.log('can play')
+      sound.play()
+    }
+    sound.onloadstart = function (...args) {
+      console.log('load start')
+    }
+    sound.onended = function (...args) {
+      console.log('ended')
+      window.clearInterval(timerId)
+      tInstance.state.set('current', null)
+      const self = this
+      console.log('ended', self)
+    }
+    sound.onplay = function (...args) {
+      console.log("play")
+      timerId = window.setInterval(() => {
+        const cue = tInstance.state.get('cue')
+        tInstance.state.set('cue', cue + 1)
+      }, 1000)
+    }
+
     tInstance.state.set('current', fileId)
-    howls[fileId] = sound
-    sound.play()
+    //howls[fileId] = sound
+
+    sound.src = link
 
   },
   'click .delete-button' (event, tInstance) {
@@ -163,13 +255,13 @@ Template.stream.events({
   'click .download-button' (event, tInstance) {
     event.preventDefault()
     fetch(self._src)
-    .then(response => {
-      response.arrayBuffer().then(function (buffer) {
-        // do something with buffer
-        SoundCache.save(fileId, new Blob([buffer], {type: fileType}), callback)
+      .then(response => {
+        response.arrayBuffer().then(function (buffer) {
+          // do something with buffer
+          SoundCache.save(fileId, new Blob([buffer], {type: fileType}), callback)
+        })
       })
-    })
-    .catch(e => console.error(e))
+      .catch(e => console.error(e))
   }
 })
 
