@@ -43,7 +43,6 @@ Template.play.onCreated(function onPlayCreated () {
     const fileType = file.type
     const link = file.link()
 
-
     SoundCache.load(fileId, (err, res, type) => {
       if (err) errorCallback(err)
       if (res) {
@@ -62,6 +61,7 @@ Template.play.onCreated(function onPlayCreated () {
         instance.clear()
       },
       onstop: function () {
+        console.log("stop sound")
         instance.clear()
       },
       onplay: function () {
@@ -72,7 +72,6 @@ Template.play.onCreated(function onPlayCreated () {
         }, updateInterval * 1000)
       },
       onpause: function () {
-        console.log("onpause")
         timer.clear()
         instance.state.set('playing', false)
       },
@@ -86,10 +85,8 @@ Template.play.onCreated(function onPlayCreated () {
   instance.pause = function pause (fileId) {
     const sound = howls[fileId]
     if (!sound) {
-      console.log("no sound for fileId", fileId)
       return
     }
-    console.log(sound)
     sound.pause()
   }
 
@@ -102,7 +99,6 @@ Template.play.onCreated(function onPlayCreated () {
 
   instance.stop = function stop (fileId) {
     const sound = howls[fileId]
-    if (!sound) return
     sound.stop(fileId)
   }
 
@@ -138,6 +134,9 @@ Template.play.helpers({
   isCached () {
     return false
   },
+  isLoaded (fileId) {
+    return howls[fileId]
+  },
   current () {
     return Template.instance().state.get('current')
   },
@@ -153,6 +152,9 @@ Template.play.helpers({
     const cue = Template.instance().state.get('cue')
     const progress = (cue / sound._duration) * 100
     return progress
+  },
+  isCurrent (fileId) {
+    return Template.instance().state.get('current') === fileId
   }
 })
 
@@ -160,6 +162,12 @@ Template.play.events({
   'click .play-button' (event, tInstance) {
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
+    const current = tInstance.state.get('current')
+
+    if (current && fileId !== current) {
+      tInstance.stop(current)
+    }
+
     tInstance.play(fileId)
   },
   'click .delete-button' (event, tInstance) {
@@ -186,7 +194,7 @@ Template.play.events({
 
     tInstance.state.set('downloading', true)
 
-    const loader = new StreamLoader(link, {step:4096})
+    const loader = new StreamLoader(link, {step: 4096})
     loader.once(StreamLoader.event.complete, function (result) {
       console.log('complete', result)
       tInstance.state.set('downloading', false)

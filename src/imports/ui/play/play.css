@@ -1,8 +1,13 @@
 .playlist {
     height: 300px;
-    overflow:auto;
+    overflow: auto;
 }
 
 .clickable {
     cursor: pointer;
+}
+
+.full-width {
+    width: 100%;
+    border-collapse: collapse;
 }
