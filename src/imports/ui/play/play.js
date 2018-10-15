@@ -1,9 +1,9 @@
 /* global Blob fetch */
-import {check} from 'meteor/check'
+import { check } from 'meteor/check'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
-import { Howl, Howler } from '../../api/howler/client/howler'
-
+import FileSaver from 'file-saver'
+import { Howl, Howler } from 'howler'
 import { SoundCache } from '../../api/sounds/SoundCache'
 import { Sounds } from '../../api/sounds/Sounds'
 import { SoundFiles } from '../../api/sounds/SoundFiles'
@@ -51,8 +51,7 @@ Template.play.onCreated(function onPlayCreated () {
     const current = instance.state.get('current')
     const sound = howls[current]
     const duration = sound.duration()
-    const progress = duration*perc
-
+    const progress = duration * perc
 
     // start updating
     sound.seek(progress)
@@ -82,7 +81,6 @@ Template.play.onCreated(function onPlayCreated () {
     instance.state.set('cue', 0)
     timer.clear()
   }
-
 
   instance.loadState = function (fileId, value) {
     const loadState = instance.state.get('loadState')
@@ -140,6 +138,29 @@ Template.play.onCreated(function onPlayCreated () {
     return sound
   }
 
+  instance.cache = function cache (fileId, onComplete) {
+    const file = SoundFiles.findOne(fileId)
+    const link = file.link()
+    const fileType = file.type
+
+    instance.loadState(fileId, {caching: true})
+
+    const loader = new StreamLoader(link, {step: 4096})
+    loader.on(StreamLoader.event.response, function (result) {
+      const progress = (result.range[1] / file.size) * 100
+      instance.loadState(fileId, {cacheProgress: Math.round(progress)})
+    })
+    loader.once(StreamLoader.event.complete, function (result) {
+      instance.loadState(fileId, {caching: false, cached: true})
+      const resource = new Blob([...Object.values(result)], {type: fileType})
+      SoundCache.save(fileId, resource)
+      if (typeof onComplete === 'function') {
+        onComplete(resource)
+      }
+    })
+    loader.load()
+  }
+
   // initial clearing to setup variables
   instance.clear()
 })
@@ -174,7 +195,7 @@ Template.play.helpers({
     const state = Template.instance().loadState(fileId)
     return state && state.cached
   },
-  cacheProgress(fileId) {
+  cacheProgress (fileId) {
     check(fileId, String)
     const state = Template.instance().loadState(fileId)
     return (state && state.cacheProgress) || 0
@@ -244,19 +265,11 @@ Template.play.events({
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
     const file = SoundFiles.findOne(fileId)
-    const link = file.link()
 
-    tInstance.loadState(fileId, {caching: true})
-
-    const loader = new StreamLoader(link, {step: 4096})
-    loader.on(StreamLoader.event.response, function (result) {
-      const progress = (result.range[1] / file.size) * 100
-      tInstance.loadState(fileId, {cacheProgress: Math.round(progress)})
+    tInstance.cache(fileId, (resource) => {
+      const downloadUrl = global.URL.createObjectURL(resource)
+      FileSaver.saveAs(downloadUrl, file.name)
     })
-    loader.once(StreamLoader.event.complete, function (result) {
-      tInstance.loadState(fileId, {caching: false, cached: true})
-    })
-    loader.load()
   },
   'click .pause-button' (event, tInstance) {
     event.preventDefault()
@@ -266,8 +279,14 @@ Template.play.events({
 
   'click .progress-active' (event, tInstance) {
     event.preventDefault()
-    const target =  event.currentTarget
+    const target = event.currentTarget
     const perc = (event.offsetX / target.clientWidth)
     tInstance.seek(perc)
+  },
+
+  'click .stream-button' (event, instance) {
+    event.preventDefault()
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaSource
   }
 })

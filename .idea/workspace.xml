@@ -22,7 +22,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="play.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="play.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="377">
@@ -36,12 +36,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="play.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="play.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="253" column="48" selection-start-line="253" selection-start-column="48" selection-end-line="253" selection-end-column="48" />
+            <state relative-caret-position="572">
+              <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
               <folding>
+                <element signature="n#!!doc" expanded="true" />
                 <element signature="e#24#58#0" expanded="true" />
               </folding>
             </state>
@@ -109,6 +110,8 @@
       <find>loaded</find>
       <find>tInstance</find>
       <find>isCached</find>
+      <find>blob</find>
+      <find>cache</find>
     </findStrings>
     <replaceStrings>
       <replace>cache</replace>
@@ -134,8 +137,8 @@
         <option value="$PROJECT_DIR$/src/client/main.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/helpers/callbacks.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.css" />
-        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.html" />
+        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
       </list>
     </option>
   </component>
@@ -200,6 +203,23 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="imports" type="462c0819:PsiDirectoryNode" />
               <item name="api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="imports" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="howler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="imports" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="howler" type="462c0819:PsiDirectoryNode" />
+              <item name="client" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
@@ -292,12 +312,12 @@
       <workItem from="1539434229595" duration="7151000" />
       <workItem from="1539457235042" duration="2057000" />
       <workItem from="1539503703846" duration="21000" />
-      <workItem from="1539585427956" duration="16485000" />
+      <workItem from="1539585427956" duration="18626000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31428000" />
+    <option name="totallyTimeSpent" value="33569000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="24" width="1922" height="1061" extended-state="6" />
@@ -334,6 +354,7 @@
         <state relative-caret-position="3075">
           <caret line="216" column="44" selection-start-line="216" selection-start-column="44" selection-end-line="216" selection-end-column="44" />
           <folding>
+            <element signature="n#!!doc" expanded="true" />
             <element signature="e#24#58#0" expanded="true" />
           </folding>
         </state>
@@ -570,12 +591,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
+    <entry file="file://$PROJECT_DIR$/src/imports/api/howler/client/howler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="253" column="48" selection-start-line="253" selection-start-column="48" selection-end-line="253" selection-end-column="48" />
+        <state>
           <folding>
-            <element signature="e#24#58#0" expanded="true" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -588,6 +608,17 @@
             <element signature="n#style#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#template#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#24#58#0" expanded="true" />
           </folding>
         </state>
       </provider>
