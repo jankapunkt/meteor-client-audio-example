@@ -11,3 +11,15 @@
     width: 100%;
     border-collapse: collapse;
 }
+
+.progress-active:hover {
+    box-shadow: 0 0 2px black;
+}
+
+.progress-bar {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}

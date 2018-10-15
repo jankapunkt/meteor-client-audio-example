@@ -1,10 +1,14 @@
 <template name="play">
-    <div class="progress" style="height: 20px;">
-        {{#with progress current}}
-            <div class="progress-bar clickable" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
-                 aria-valuemin="0" aria-valuemax="100"></div>
-        {{/with}}
-    </div>
+    {{#with current}}
+        <div class="progress progress-active clickable" style="height: 20px;">
+            {{#with progress this}}
+                <div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+            {{/with}}
+        </div>
+    {{else}}
+        <div class="progress" style="height: 20px;"></div>
+    {{/with}}
     <p></p>
     <table class="table table-hover outer-border">
         <thead>

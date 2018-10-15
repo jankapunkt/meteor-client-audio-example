@@ -14,7 +14,7 @@ import './play.html'
 import { callback, errorCallback, wrap } from '../helpers/callbacks'
 import StreamLoader from '../../api/stream/StreamLoader'
 
-const updateInterval = 0.125
+const updateInterval = 0.025
 const howls = {}
 const timer = {
   timerId: null,
@@ -44,6 +44,19 @@ Template.play.onCreated(function onPlayCreated () {
   instance.play = function play (fileId) {
     (howls[fileId] || instance.load(fileId)).play()
     instance.state.set('current', fileId)
+  }
+
+  instance.seek = function (perc) {
+    const cue = instance.state.get('cue')
+    const current = instance.state.get('current')
+    const sound = howls[current]
+    const duration = sound.duration()
+    const progress = duration*perc
+
+
+    // start updating
+    sound.seek(progress)
+    instance.state.set('cue', progress)
   }
 
   instance.pause = function pause (fileId) {
@@ -232,5 +245,12 @@ Template.play.events({
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
     tInstance.pause(fileId)
+  },
+
+  'click .progress-active' (event, tInstance) {
+    event.preventDefault()
+    const target =  event.currentTarget
+    const perc = (event.offsetX / target.clientWidth)
+    tInstance.seek(perc)
   }
 })
