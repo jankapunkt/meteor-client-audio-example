@@ -1,0 +1,8 @@
+.playlist {
+    height: 300px;
+    overflow:auto;
+}
+
+.clickable {
+    cursor: pointer;
+}

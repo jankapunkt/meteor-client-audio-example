@@ -1,67 +1,59 @@
 <template name="play">
-    <table class="table border-0">
-        <tbody>
-        <tr>
-            <td>
-                <button class="btn btn-default"></button>
-            </td>
-            <td style="width:100%;">
-                <div class="progress" style="height: 50px;">
-                    {{#with progress this}}
-                        <div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
-                             aria-valuemin="0" aria-valuemax="100"></div>
-                    {{/with}}
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="progress" style="height: 20px;">
+        {{#with progress current}}
+            <div class="progress-bar clickable" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        {{/with}}
+    </div>
+        <p></p>
 	<table class="table table-hover outer-border">
 		<thead>
 		<tr>
 			<th>Filename</th>
 			<th>Size</th>
-			<th>Cached?</th>
-			<th>Actions</th>
+			<th class="text-center">Cached?</th>
+			<th class="text-right">Actions</th>
 		</tr>
 		</thead>
 		<tbody>
 		{{#each sounds}}
 			{{#with getFile this.fileId}}
 				{{log this}}
-				<tr class="">
+				<tr class="{{#if isPlaying this._id}}table-primary{{/if}}">
 					<td class="font-weight-bold">
-						{{this.name}}
+						<span>{{this.name}}</span>
+                        <a href class="delete-button" data-target="{{this._id}}">
+                            <i class="fa fa-fw fa-trash-o"></i>
+                        </a>
 					</td>
 					<td class="text-muted">{{toMB this.size}} MB</td>
-					<td>
+					<td class="text-center">
 						{{#if isCached this.link}}
-							<i class="fa fa-fw fa-download"></i>
+							<i class="fa fa-fw fa-check"></i>
+                            {{else}}
+                            <i class="fa fa-fw fa-times text-muted"></i>
 						{{/if}}
 					</td>
 					<td class="text-right">
 						{{#if isPlaying this._id}}
 							{{#if loaded}}
-								<button class="btn btn-sm btn-default stop-button" data-target="{{this._id}}">
-									<i class="fa fa-fw fa-stop"></i>
-								</button>
+                                <button class="btn btn-sm btn-default pause-button" data-target="{{this._id}}">
+                                    <i class="fa fa-fw fa-pause"></i>
+                                </button>
 							{{else}}
 								<button class="btn btn-sm btn-default">
 									<i class="fa fa-spinner fa-pulse"></i>
 								</button>
 							{{/if}}
 						{{else}}
-							<button class="btn btn-sm btn-default play-button"
-									data-target="{{this._id}}"
-									data-link="{{this.link}}"
-									data-type="{{this.type}}">
+							<button class="btn btn-sm btn-default play-button" data-target="{{this._id}}">
 								<i class="fa fa-fw fa-play"></i>
 							</button>
 						{{/if}}
 
-						<button class="btn btn-sm btn-default delete-button" data-target="{{this._id}}">
-							<i class="fa fa-fw fa-trash-o"></i>
-						</button>
+                        <button class="btn btn-sm btn-default download-button" data-target="{{this._id}}">
+                            <i class="fa fa-fw fa-download"></i>
+                        </button>
 					</td>
 				</tr>
                 {{else}}
