@@ -54,3 +54,11 @@ export const errorCallback = (err) => {
     timer: 1000,
   })
 }
+
+export const wrap = (fct) => {
+  try {
+    fct()
+  } catch (e) {
+    errorCallback(e)
+  }
+}

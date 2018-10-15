@@ -10,9 +10,8 @@ import { SoundFiles } from '../../api/sounds/SoundFiles'
 import './play.css'
 import './play.html'
 
-import { callback, errorCallback } from '../helpers/callbacks'
+import { callback, errorCallback, wrap } from '../helpers/callbacks'
 import StreamLoader from '../../api/stream/StreamLoader'
-import { getAudioData } from '../../api/stream/BufferStream'
 
 const updateInterval = 0.125
 const howls = {}
@@ -35,6 +34,31 @@ Template.play.onCreated(function onPlayCreated () {
 
   instance.play = function play (fileId) {
     (howls[fileId] || instance.load(fileId)).play()
+    instance.state.set('current', fileId)
+  }
+
+  instance.pause = function pause (fileId) {
+    const sound = howls[fileId]
+    sound.pause()
+  }
+
+  instance.remove = function remove (fileId) {
+    instance.stop(fileId)
+    if (howls[fileId]) {
+      delete howls[fileId]
+    }
+  }
+
+  instance.stop = function stop (fileId) {
+    const sound = howls[fileId]
+    sound.stop()
+  }
+
+  instance.clear = function clear (fileId) {
+    instance.state.set('current', null)
+    instance.state.set('playing', false)
+    instance.state.set('cue', 0)
+    timer.clear()
   }
 
   instance.load = function load (fileId) {
@@ -58,11 +82,11 @@ Template.play.onCreated(function onPlayCreated () {
         instance.state.set('loaded', true)
       },
       onend: function () {
-        instance.clear()
+        timer.clear()
+        tInstance.clear()
       },
       onstop: function () {
-        console.log("stop sound")
-        instance.clear()
+        timer.clear()
       },
       onplay: function () {
         instance.state.set('playing', true)
@@ -77,36 +101,8 @@ Template.play.onCreated(function onPlayCreated () {
       },
     })
 
-    instance.state.set('current', fileId)
     howls[fileId] = sound
     return sound
-  }
-
-  instance.pause = function pause (fileId) {
-    const sound = howls[fileId]
-    if (!sound) {
-      return
-    }
-    sound.pause()
-  }
-
-  instance.remove = function remove (fileId) {
-    instance.stop(fileId)
-    if (howls[fileId]) {
-      delete howls[fileId]
-    }
-  }
-
-  instance.stop = function stop (fileId) {
-    const sound = howls[fileId]
-    sound.stop(fileId)
-  }
-
-  instance.clear = function clear () {
-    instance.state.set('current', null)
-    instance.state.set('playing', false)
-    instance.state.set('cue', 0)
-    timer.clear()
   }
 
   // initial clearing to setup variables
@@ -134,7 +130,8 @@ Template.play.helpers({
   isCached () {
     return false
   },
-  isLoaded (fileId) {
+  isLoadedInMem (fileId) {
+
     return howls[fileId]
   },
   current () {
@@ -166,6 +163,7 @@ Template.play.events({
 
     if (current && fileId !== current) {
       tInstance.stop(current)
+      tInstance.clear()
     }
 
     tInstance.play(fileId)
@@ -184,6 +182,7 @@ Template.play.events({
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
     tInstance.stop(fileId)
+    tInstance.clear()
   },
 
   'click .download-button' (event, tInstance) {
@@ -196,7 +195,6 @@ Template.play.events({
 
     const loader = new StreamLoader(link, {step: 4096})
     loader.once(StreamLoader.event.complete, function (result) {
-      console.log('complete', result)
       tInstance.state.set('downloading', false)
     })
     loader.load()
