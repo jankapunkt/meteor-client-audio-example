@@ -164,8 +164,25 @@ Template.play.helpers({
     if (current !== fileId) return false
     return Template.instance().state.get('playing')
   },
-  isCached () {
-    return false
+  caching (fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return state && state.caching
+  },
+  isCached (fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return state && state.cached
+  },
+  cacheProgress(fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return (state && state.cacheProgress) || 0
+  },
+  loading (fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return state && state.loading
   },
   loaded (fileId) {
     check(fileId, String)
@@ -179,11 +196,7 @@ Template.play.helpers({
     check(fileId, String)
     return howls[fileId]
   },
-  loading (fileId) {
-    check(fileId, String)
-    const state = Template.instance().loadState(fileId)
-    return state && state.loading
-  },
+
   progress (fileId) {
     const sound = howls[fileId]
     if (!sound) return 0
@@ -233,11 +246,15 @@ Template.play.events({
     const file = SoundFiles.findOne(fileId)
     const link = file.link()
 
-    tInstance.state.set('downloading', true)
+    tInstance.loadState(fileId, {caching: true})
 
     const loader = new StreamLoader(link, {step: 4096})
+    loader.on(StreamLoader.event.response, function (result) {
+      const progress = (result.range[1] / file.size) * 100
+      tInstance.loadState(fileId, {cacheProgress: Math.round(progress)})
+    })
     loader.once(StreamLoader.event.complete, function (result) {
-      tInstance.state.set('downloading', false)
+      tInstance.loadState(fileId, {caching: false, cached: true})
     })
     loader.load()
   },

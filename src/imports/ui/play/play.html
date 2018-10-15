@@ -51,17 +51,22 @@
 
                     <!-- is cached as blob into a local storage -->
                     <td class="text-center">
-                        {{#if isCached this.fileId}}
+                        {{#if isCached this._id}}
                             <i class="fa fa-fw fa-check"></i>
                         {{else}}
-                            <a href class="cache-button" data-target="{{this._id}}">
-                                <i class="fa fa-fw fa-refresh"></i>
-                            </a>
+                            {{#if caching this._id}}
+                                <i class="fa fa-fw fa-refresh fa-spin text-muted"></i> {{cacheProgress this._id}}%
+                            {{else}}
+                                <a href class="cache-button" data-target="{{this._id}}">
+                                    <i class="fa fa-fw fa-refresh"></i>
+                                </a>
+                            {{/if}}
                         {{/if}}
                     </td>
 
                     <td class="text-center">
-                        <button class="btn btn-sm btn-default download-button" data-target="{{this._id}}">
+                        <button class="btn btn-sm btn-default download-button {{#if caching this._id}}disabled{{/if}}"
+                                data-target="{{this._id}}">
                             <i class="fa fa-fw fa-download"></i>
                         </button>
                     </td>
