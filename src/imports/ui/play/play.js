@@ -1,4 +1,5 @@
 /* global Blob fetch */
+import {check} from 'meteor/check'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Howl, Howler } from '../../api/howler/client/howler'
@@ -28,9 +29,17 @@ const timer = {
   }
 }
 
+const SoundStates = {
+  loading: 'loading',
+  loaded: 'loaded',
+  caching: 'caching',
+  cached: 'cached'
+}
+
 Template.play.onCreated(function onPlayCreated () {
   const instance = this
   instance.state = new ReactiveDict()
+  instance.state.set('loadState', {})
 
   instance.play = function play (fileId) {
     (howls[fileId] || instance.load(fileId)).play()
@@ -61,8 +70,20 @@ Template.play.onCreated(function onPlayCreated () {
     timer.clear()
   }
 
+
+  instance.loadState = function (fileId, value) {
+    const loadState = instance.state.get('loadState')
+    const state = loadState[fileId]
+
+    if (typeof value !== 'undefined') {
+      loadState[fileId] = Object.assign({}, state || {}, value)
+      instance.state.set('loadState', loadState)
+    }
+    return state
+  }
+
   instance.load = function load (fileId) {
-    instance.state.set('loaded', false)
+    instance.loadState(fileId, {loading: true})
     const file = SoundFiles.findOne(fileId)
     const fileType = file.type
     const link = file.link()
@@ -79,11 +100,12 @@ Template.play.onCreated(function onPlayCreated () {
       html5: true,
       preload: false,
       onload: function () {
-        instance.state.set('loaded', true)
+        console.log('onload', fileId)
+        instance.loadState(fileId, {loading: false, loaded: true})
       },
       onend: function () {
         timer.clear()
-        tInstance.clear()
+        instance.clear()
       },
       onstop: function () {
         timer.clear()
@@ -120,9 +142,11 @@ Template.play.helpers({
     return Sounds.collection.find()
   },
   getFile (fileId) {
+    check(fileId, String)
     return SoundFiles.findOne(fileId)
   },
   isPlaying (fileId) {
+    check(fileId, String)
     const current = Template.instance().state.get('current')
     if (current !== fileId) return false
     return Template.instance().state.get('playing')
@@ -130,18 +154,22 @@ Template.play.helpers({
   isCached () {
     return false
   },
-  isLoadedInMem (fileId) {
-
-    return howls[fileId]
+  loaded (fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return state && state.loaded
   },
   current () {
     return Template.instance().state.get('current')
   },
   getSound (fileId) {
+    check(fileId, String)
     return howls[fileId]
   },
-  loaded () {
-    return Template.instance().state.get('loaded')
+  loading (fileId) {
+    check(fileId, String)
+    const state = Template.instance().loadState(fileId)
+    return state && state.loading
   },
   progress (fileId) {
     const sound = howls[fileId]
@@ -151,6 +179,7 @@ Template.play.helpers({
     return progress
   },
   isCurrent (fileId) {
+    check(fileId, String)
     return Template.instance().state.get('current') === fileId
   }
 })

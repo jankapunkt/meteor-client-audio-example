@@ -13,6 +13,7 @@
             <th>Size</th>
             <th class="text-center">Loaded</th>
             <th class="text-center">Cached</th>
+            <th class="text-center"></th>
             <th class="text-right">Actions</th>
         </tr>
         </thead>
@@ -35,11 +36,11 @@
 
                     <!-- is loaded into memory using instance.load(fileId) -->
                     <td class="text-center">
-                        {{#if isLoadedInMem this.fileId}}
+                        {{#if loaded this._id}}
                             <i class="fa fa-fw fa-check"></i>
                         {{else}}
                             <a href class="load-button" data-target="{{this._id}}">
-                                <i class="fa fa-fw fa-refresh"></i>
+                                <i class="fa fa-fw fa-refresh {{#if loading this._id}}fa-spin{{/if}}"></i>
                             </a>
                         {{/if}}
                     </td>
@@ -55,14 +56,15 @@
                         {{/if}}
                     </td>
 
-                    <td class="text-right">
-
+                    <td class="text-center">
                         <button class="btn btn-sm btn-default download-button" data-target="{{this._id}}">
                             <i class="fa fa-fw fa-download"></i>
                         </button>
+                    </td>
+                    <td class="text-right">
 
                         {{#if isCurrent this._id}}
-                            {{#if loaded}}
+                            {{#if loaded this._id}}
                                 <button class="btn btn-sm btn-default stop-button" data-target="{{this._id}}">
                                     <i class="fa fa-fw fa-stop"></i>
                                 </button>
