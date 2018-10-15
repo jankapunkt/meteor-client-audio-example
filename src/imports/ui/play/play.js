@@ -41,8 +41,32 @@ Template.play.onCreated(function onPlayCreated () {
   instance.state = new ReactiveDict()
   instance.state.set('loadState', {})
 
+  instance.autorun(() => {
+    if (Sounds.subscription && Sounds.subscription.ready()) {
+      Sounds.collection.find().fetch().forEach(doc => {
+        const {fileId} = doc
+        const file = SoundFiles.findOne(fileId)
+        SoundCache.load(fileId, (err, resource) => {
+          if (err) {
+            errorCallback(err)
+          } else if (!howls[fileId]) {
+            instance.load(fileId, global.URL.createObjectURL(resource), [file.ext])
+            instance.loadState(fileId, {cached: true})
+          }
+        })
+      })
+    }
+  })
+
   instance.play = function play (fileId) {
-    (howls[fileId] || instance.load(fileId)).play()
+    if (howls[fileId]) {
+      howls[fileId].play()
+    } else {
+      const file = SoundFiles.findOne(fileId)
+      const link = file.link()
+      const sound = instance.load(fileId, link)
+      sound.play()
+    }
     instance.state.set('current', fileId)
   }
 
@@ -93,26 +117,20 @@ Template.play.onCreated(function onPlayCreated () {
     return state
   }
 
-  instance.load = function load (fileId) {
+  instance.load = function load (fileId, url, extensions) {
     instance.loadState(fileId, {loading: true})
-    const file = SoundFiles.findOne(fileId)
-    const fileType = file.type
-    const link = file.link()
-
-    SoundCache.load(fileId, (err, res, type) => {
-      if (err) errorCallback(err)
-      if (res) {
-        console.log('file exists', type, res.byteLength)
-      }
-    })
-
+    console.log("load", fileId, url)
     const sound = new Howl({
-      src: [link],
+      src: [url],
       html5: true,
-      preload: false,
+      preload: true,
+      format: extensions,
       onload: function () {
         console.log('onload', fileId)
         instance.loadState(fileId, {loading: false, loaded: true})
+      },
+      onloaderror (soundId, err) {
+        errorCallback(err)
       },
       onend: function () {
         timer.clear()
@@ -128,13 +146,17 @@ Template.play.onCreated(function onPlayCreated () {
           instance.state.set('cue', cue + updateInterval)
         }, updateInterval * 1000)
       },
+      onplayerror (soundId, err) {
+        errorCallback(err)
+      },
       onpause: function () {
         timer.clear()
         instance.state.set('playing', false)
-      },
+      }
     })
 
     howls[fileId] = sound
+    console.log(sound)
     return sound
   }
 
@@ -153,7 +175,9 @@ Template.play.onCreated(function onPlayCreated () {
     loader.once(StreamLoader.event.complete, function (result) {
       instance.loadState(fileId, {caching: false, cached: true})
       const resource = new Blob([...Object.values(result)], {type: fileType})
-      SoundCache.save(fileId, resource)
+      SoundCache.save(fileId, resource, function (...args) {
+        console.log('saved to cache')
+      })
       if (typeof onComplete === 'function') {
         onComplete(resource)
       }
@@ -260,16 +284,40 @@ Template.play.events({
     tInstance.stop(fileId)
     tInstance.clear()
   },
-
-  'click .download-button' (event, tInstance) {
+  'click .load-button' (event, tInstance) {
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
     const file = SoundFiles.findOne(fileId)
+    tInstance.load(fileId, file.link())
+  },
+  'click .cache-button' (event, tInstance) {
+    event.preventDefault()
+    const fileId = tInstance.$(event.currentTarget).data('target')
+    tInstance.cache(fileId)
+  },
+  'click .download-button' (event, tInstance) {
+    event.preventDefault()
+    const fileId = tInstance.$(event.currentTarget).data('target')
+    const fileState = tInstance.loadState(fileId)
+    const file = SoundFiles.findOne(fileId)
 
-    tInstance.cache(fileId, (resource) => {
+    const saveResource = (resource) => {
       const downloadUrl = global.URL.createObjectURL(resource)
       FileSaver.saveAs(downloadUrl, file.name)
-    })
+    }
+
+    if (fileState && fileState.cached) {
+      SoundCache.load(fileId, (err, res) => {
+        if (err) {
+          errorCallback(err)
+          return
+        }
+        saveResource(res)
+      })
+    }else {
+      const file = SoundFiles.findOne(fileId)
+      tInstance.cache(fileId, saveResource)
+    }
   },
   'click .pause-button' (event, tInstance) {
     event.preventDefault()

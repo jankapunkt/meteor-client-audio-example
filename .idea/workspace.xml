@@ -5,10 +5,12 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/client/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/main.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/client/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/imports/api/sounds/client/subscriptions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/imports/api/sounds/client/subscriptions.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/imports/ui/helpers/callbacks.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/imports/ui/helpers/callbacks.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/imports/ui/play/play.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/imports/ui/play/play.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/imports/ui/play/play.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/imports/ui/play/play.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/imports/ui/play/play.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/imports/ui/play/play.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/startup/client/subscriptions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/startup/client/subscriptions.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -25,7 +27,7 @@
       <file leaf-file-name="play.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
+            <state relative-caret-position="45">
               <caret line="57" column="114" selection-start-line="57" selection-start-column="114" selection-end-line="57" selection-end-column="114" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#template#0;n#!!top" expanded="true" />
@@ -39,12 +41,21 @@
       <file leaf-file-name="play.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="572">
-              <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+            <state relative-caret-position="465">
+              <caret line="301" column="42" selection-start-line="301" selection-start-column="42" selection-end-line="301" selection-end-column="42" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="e#24#58#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SoundCache.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/SoundCache.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="450">
+              <caret line="30" column="54" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -79,10 +90,36 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/client/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+            <state relative-caret-position="225">
+              <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#44#0" expanded="true" />
+              </folding>
             </state>
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="services.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/startup/client/services.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="9" selection-start-column="9" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="subscriptions.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/startup/client/subscriptions.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="subscriptions.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/client/subscriptions.js">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -112,11 +149,20 @@
       <find>isCached</find>
       <find>blob</find>
       <find>cache</find>
+      <find>subscribe</find>
+      <find>fileType</find>
+      <find>file</find>
+      <find>createO</find>
+      <find>instance.load</find>
+      <find>.load(</find>
     </findStrings>
     <replaceStrings>
       <replace>cache</replace>
       <replace>play</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/src/imports</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -138,6 +184,9 @@
         <option value="$PROJECT_DIR$/src/imports/ui/helpers/callbacks.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.css" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.html" />
+        <option value="$PROJECT_DIR$/src/imports/api/sounds/client/subscriptions.js" />
+        <option value="$PROJECT_DIR$/src/startup/client/subscriptions.js" />
+        <option value="$PROJECT_DIR$/src/imports/api/sounds/SoundCache.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
       </list>
     </option>
@@ -189,60 +238,13 @@
               <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
               <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name=".meteor" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="client" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="api" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="api" type="462c0819:PsiDirectoryNode" />
-              <item name="howler" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="api" type="462c0819:PsiDirectoryNode" />
-              <item name="howler" type="462c0819:PsiDirectoryNode" />
-              <item name="client" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="play" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="meteor-client-audio-example" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="imports" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="upload" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="meteor-client-audio-example" type="b2602c69:ProjectViewProjectNode" />
@@ -312,12 +314,12 @@
       <workItem from="1539434229595" duration="7151000" />
       <workItem from="1539457235042" duration="2057000" />
       <workItem from="1539503703846" duration="21000" />
-      <workItem from="1539585427956" duration="18626000" />
+      <workItem from="1539585427956" duration="20916000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33569000" />
+    <option name="totallyTimeSpent" value="35859000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="24" width="1922" height="1061" extended-state="6" />
@@ -327,6 +329,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -339,7 +342,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -488,13 +490,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/startup/client/services.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/api/services/hookAjax.js" />
     <entry file="file://$PROJECT_DIR$/src/client/main.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -556,13 +551,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/client/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/client/main.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
@@ -602,7 +590,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
+        <state relative-caret-position="45">
           <caret line="57" column="114" selection-start-line="57" selection-start-column="114" selection-end-line="57" selection-end-column="114" />
           <folding>
             <element signature="n#style#0;n#div#0;n#template#0;n#!!top" expanded="true" />
@@ -612,10 +600,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/.meteor/packages">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/startup/client/services.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="9" selection-start-column="9" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/client/subscriptions.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/startup/client/subscriptions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/client/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/SoundCache.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="30" column="54" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="572">
-          <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+        <state relative-caret-position="465">
+          <caret line="301" column="42" selection-start-line="301" selection-start-column="42" selection-end-line="301" selection-end-column="42" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="e#24#58#0" expanded="true" />
