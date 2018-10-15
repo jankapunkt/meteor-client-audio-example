@@ -5,20 +5,21 @@ import '../startup/both/files'
 import '../startup/client/subscriptions'
 import '../startup/client/services'
 
-import '../imports/ui/stream/stream'
+import '../imports/ui/play/play'
 import '../imports/ui/upload/upload'
 
 import './main.html'
 
 const States = {
-  stream: 'stream',
-  upload: 'upload'
+  play: 'play',
+  upload: 'upload',
+  cache: 'cache'
 }
 
 Template.body.onCreated(function onBodyCreated () {
   const instance = this
   instance.state = new ReactiveDict()
-  instance.state.set('active', States.stream)
+  instance.state.set('active', States.play)
 })
 
 Template.body.helpers({

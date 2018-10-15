@@ -7,14 +7,15 @@ import { SoundCache } from '../../api/sounds/SoundCache'
 import { Sounds } from '../../api/sounds/Sounds'
 import { SoundFiles } from '../../api/sounds/SoundFiles'
 
-import './stream.html'
+import './play.html'
+
 import { callback, errorCallback } from '../helpers/callbacks'
 import StreamLoader from '../../api/stream/StreamLoader'
 import { getAudioData } from '../../api/stream/BufferStream'
 
 const howls = {}
 
-Template.stream.onCreated(function onStreamCreated () {
+Template.play.onCreated(function onPlayCreated () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.state.set('current', null)
@@ -24,7 +25,7 @@ Template.stream.onCreated(function onStreamCreated () {
 
 // Meteor.connection._stream.on('message', console.log.bind(console))
 
-Template.stream.helpers({
+Template.play.helpers({
   sounds () {
     return Sounds.collection.find()
   },
@@ -43,18 +44,18 @@ Template.stream.helpers({
   getSound (fileId) {
     return howls[fileId]
   },
-  progress (sound) {
-    const cue = Template.instance().state.get('cue')
-    return (cue / sound._duration) * 100
-  },
   loaded () {
     return Template.instance().state.get('loaded')
+  },
+  progress (sound) {
+    const cue = Template.instance().state.get('cue')
+    return cue ? (cue / sound._duration) * 100 : 0
   }
 })
 
 let timerId
 
-Template.stream.events({
+Template.play.events({
   'click .play-button' (event, tInstance) {
     event.preventDefault()
 
@@ -189,6 +190,7 @@ Template.stream.events({
       },
     })*/
 
+    /*
     function getAllEvents(element) {
       var result = [];
       for (var key in element) {
@@ -199,45 +201,19 @@ Template.stream.events({
       return result.join(' ');
     }
 
-    const sound = new Audio()
 
 
     var el = $(sound);
     el.bind(getAllEvents(el[0]), function(e) {
-      /* insert your code */
       console.log(e.type)
     });
 
+*/
 
-    sound.onprogress = function(...args) {
-      console.log("progress", ...args);
-    };
-    sound.oncanplay = function (...args) {
-      console.log('can play')
-      sound.play()
-    }
-    sound.onloadstart = function (...args) {
-      console.log('load start')
-    }
-    sound.onended = function (...args) {
-      console.log('ended')
-      window.clearInterval(timerId)
-      tInstance.state.set('current', null)
-      const self = this
-      console.log('ended', self)
-    }
-    sound.onplay = function (...args) {
-      console.log("play")
-      timerId = window.setInterval(() => {
-        const cue = tInstance.state.get('cue')
-        tInstance.state.set('cue', cue + 1)
-      }, 1000)
-    }
-
-    tInstance.state.set('current', fileId)
+    tInstance.state.set('current',fileId)
     //howls[fileId] = sound
 
-    sound.src = link
+
 
   },
   'click .delete-button' (event, tInstance) {

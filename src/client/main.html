@@ -13,22 +13,29 @@
 <body>
 	<div class="container">
 		<div class="jumbotron text-center">
-			<p>Client Audio Streaming and Caching</p>
+			<p>Client Audio playing and Caching</p>
 		</div>
 
 		<ul class="nav nav-tabs">
 			<li class="nav-item">
-				<a href class="tab nav-link {{#if active "stream"}}active{{/if}}" data-target="stream">Stream</a>
+				<a href class="tab nav-link {{#if active "play"}}active{{/if}}" data-target="play">Play</a>
 			</li>
+            <li class="nav-item">
+                <a href class="tab nav-link {{#if active "cache"}}active{{/if}}" data-target="cache">Cache</a>
+            </li>
 			<li class="nav-item">
 				<a href class="tab nav-link {{#if active "upload"}}active{{/if}}" data-target="upload">Add files</a>
 			</li>
 		</ul>
 		<p></p>
 
-		{{#if active "stream"}}
-			{{> stream}}
+		{{#if active "play"}}
+			{{> play}}
 		{{/if}}
+
+        {{#if active "cache"}}
+            {{> cache}}
+        {{/if}}
 
 		{{#if active "upload"}}
 			{{> upload}}

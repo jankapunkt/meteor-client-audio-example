@@ -1,12 +1,21 @@
-<template name="stream">
-	{{#with getSound current}}
-		<div class="progress" style="height: 5px;">
-			{{#with progress this}}
-				<div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
-					 aria-valuemin="0" aria-valuemax="100"></div>
-			{{/with}}
-		</div>
-	{{/with}}
+<template name="play">
+    <table class="table border-0">
+        <tbody>
+        <tr>
+            <td>
+                <button class="btn btn-default"></button>
+            </td>
+            <td style="width:100%;">
+                <div class="progress" style="height: 50px;">
+                    {{#with progress this}}
+                        <div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    {{/with}}
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 	<table class="table table-hover outer-border">
 		<thead>
 		<tr>
@@ -55,6 +64,10 @@
 						</button>
 					</td>
 				</tr>
+                {{else}}
+                <div class="jumbotron">
+                    <p>No files in list. Add one to play.</p>
+                </div>
 			{{/with}}
 		{{/each}}
 		</tbody>
