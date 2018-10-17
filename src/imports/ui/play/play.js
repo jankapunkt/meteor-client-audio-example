@@ -42,17 +42,18 @@ Template.play.onCreated(function onPlayCreated () {
   instance.state.set('loadState', {})
 
   instance.autorun(() => {
-    if (Sounds.subscription && Sounds.subscription.ready()) {
+    if (SoundCache.size > 0 && Sounds.subscription && Sounds.subscription.ready()) {
       Sounds.collection.find().fetch().forEach(doc => {
         const {fileId} = doc
         const file = SoundFiles.findOne(fileId)
-        SoundCache.load(fileId, (err, resource) => {
-          if (err) {
-            errorCallback(err)
-          } else if (!howls[fileId]) {
+        SoundCache.load(fileId, (resource) => {
+          if (resource && !howls[fileId]) {
+            console.log("resource", resource)
             instance.load(fileId, global.URL.createObjectURL(resource), [file.ext])
             instance.loadState(fileId, {cached: true})
           }
+        }, (err) => {
+          errorCallback(err)
         })
       })
     }

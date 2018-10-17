@@ -32,6 +32,7 @@ export const callback = ({expErr = true, expRes = true, onErr, onRes}) => (err, 
 }
 
 export const errorCallback = (err) => {
+  console.error(err)
   $.notify({
     // options
     title: err.error || err.name,
