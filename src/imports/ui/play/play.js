@@ -333,9 +333,52 @@ Template.play.events({
     tInstance.seek(perc)
   },
 
-  'click .stream-button' (event, instance) {
+  'click .stream-button' (event, tInstance) {
     event.preventDefault()
 
+    const fileId = tInstance.$(event.currentTarget).data('target')
+    const file = SoundFiles.findOne(fileId)
+    const assetURL = file.link
     // https://developer.mozilla.org/en-US/docs/Web/API/MediaSource
+
+    const audio = new Audio()
+    const mimeCodec = file.type
+
+    if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+      const mediaSource = new MediaSource();
+      console.log(mediaSource.readyState); // closed
+      audio.src = URL.createObjectURL(mediaSource);
+      mediaSource.addEventListener('sourceopen', sourceOpen);
+    } else {
+      console.error('Unsupported MIME type or codec: ', mimeCodec);
+    }
+
+    function sourceOpen (_) {
+      //console.log(this.readyState); // open
+      const mediaSource = this;
+      const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+      fetchAB(assetURL, function (buf) {
+        sourceBuffer.addEventListener('updateend', function (_) {
+          mediaSource.endOfStream();
+          audio.play();
+          //console.log(mediaSource.readyState); // ended
+        });
+        sourceBuffer.appendBuffer(buf);
+      });
+    }
   }
 })
+
+
+
+
+function fetchAB (url, cb) {
+  console.log(url);
+  const xhr = new XMLHttpRequest;
+  xhr.open('get', url);
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function () {
+    cb(xhr.response);
+  };
+  xhr.send();
+}
