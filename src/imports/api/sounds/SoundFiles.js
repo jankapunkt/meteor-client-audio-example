@@ -3,13 +3,32 @@ import { FilesCollection } from 'meteor/ostrio:files'
 import { MongoInternals } from 'meteor/mongo'
 import Grid from 'gridfs-stream'
 import fs from 'fs'
+import mime from 'mime'
 
-let gfs
+let gfs, ffmpeg
 if (Meteor.isServer) {
   gfs = Grid(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
     MongoInternals.NpmModule
   )
+  ffmpeg = require('fluent-ffmpeg')
+}
+
+function convertFormats (image, callback) {
+  let sourceFile = ffmpeg(image.path)
+  sourceFile.noVideo() // use for audio-only
+
+  const data = ['ogg', 'mp4', 'webm'].map(function (extension) {
+    const name = image.name.replace(image.extension, extension)
+    const path = `${image._storagePath}/${name}`
+    const type = mime.getType(extension)
+    sourceFile.output(path)
+    return {extension, path, type, name}
+  })
+
+  sourceFile.on('end', Meteor.bindEnvironment(() => callback(null, data)))
+  sourceFile.on('error', Meteor.bindEnvironment((err) => callback(err)))
+  sourceFile.run()
 }
 
 /**
@@ -89,63 +108,63 @@ function interceptDownloadServe (http, fileRef, vRef, version, readableStream, r
   headers = http.request.headers
 
   switch (responseType) {
-  case '400':
-    if (self.debug) {
-      console.warn('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [400] Content-Length mismatch!')
-    }
-    text = 'Content-Length mismatch!'
-    http.response.writeHead(400, {
-      'Content-Type': 'text/plain',
-      'Content-Length': text.length
-    })
-    http.response.end(text)
-    break
-  case '404':
-    return self._404(http)
-    break
-  case '416':
-    if (self.debug) {
-      console.warn('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [416] Content-Range is not specified!')
-    }
-    http.response.writeHead(416)
-    http.response.end()
-    break
-  case '200':
-    if (self.debug) {
-      console.info('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [200]')
-    }
-    stream = readableStream || fs.createReadStream(vRef.path)
-    if (readableStream) {
-      http.response.writeHead(200)
-    }
-    stream.on('open', function () {
-      http.response.writeHead(200)
-    }).on('error', streamErrorHandler).on('end', function () {
-      http.response.end()
-    }).pipe(http.response)
-    break
-  case '206':
-    if (self.debug) {
-      console.info('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [206]')
-    }
-    http.response.setHeader('Content-Range', 'bytes ' + reqRange.start + '-' + reqRange.end + '/' + vRef.size)
-    var myid = (fileRef.versions[version].meta || {}).gridFsFileId
-    stream = readableStream || gfs.createReadStream({
-      _id: myid,
-      range: {
-        startPos: reqRange.start,
-        endPos: reqRange.end
+    case '400':
+      if (self.debug) {
+        console.warn('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [400] Content-Length mismatch!')
       }
-    })
-    if (readableStream) {
-      http.response.writeHead(206)
-    }
-    stream.on('open', function () {
-      http.response.writeHead(206)
-    }).on('error', streamErrorHandler).on('end', function () {
+      text = 'Content-Length mismatch!'
+      http.response.writeHead(400, {
+        'Content-Type': 'text/plain',
+        'Content-Length': text.length
+      })
+      http.response.end(text)
+      break
+    case '404':
+      return self._404(http)
+      break
+    case '416':
+      if (self.debug) {
+        console.warn('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [416] Content-Range is not specified!')
+      }
+      http.response.writeHead(416)
       http.response.end()
-    }).pipe(http.response)
-    break
+      break
+    case '200':
+      if (self.debug) {
+        console.info('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [200]')
+      }
+      stream = readableStream || fs.createReadStream(vRef.path)
+      if (readableStream) {
+        http.response.writeHead(200)
+      }
+      stream.on('open', function () {
+        http.response.writeHead(200)
+      }).on('error', streamErrorHandler).on('end', function () {
+        http.response.end()
+      }).pipe(http.response)
+      break
+    case '206':
+      if (self.debug) {
+        console.info('[FilesCollection] [serve(' + vRef.path + ', ' + version + ')] [206]')
+      }
+      http.response.setHeader('Content-Range', 'bytes ' + reqRange.start + '-' + reqRange.end + '/' + vRef.size)
+      var myid = (fileRef.versions[version].meta || {}).gridFsFileId
+      stream = readableStream || gfs.createReadStream({
+        _id: myid,
+        range: {
+          startPos: reqRange.start,
+          endPos: reqRange.end
+        }
+      })
+      if (readableStream) {
+        http.response.writeHead(206)
+      }
+      stream.on('open', function () {
+        http.response.writeHead(206)
+      }).on('error', streamErrorHandler).on('end', function () {
+        http.response.end()
+      }).pipe(http.response)
+      break
   }
 }
 
@@ -156,28 +175,47 @@ export const SoundFiles = new FilesCollection({
   collectionName: 'soundFiles',
   allowClientCode: false,
   onBeforeUpload (file) {
-    if (file.size <= 104857600 && /mp3|wav/i.test(file.ext)) {
+    if (file.size <= 104857600 && /mp3|wav|ogg|mp4|webm/i.test(file.ext)) {
       return true
     } else {
       return 'Please upload audio, with size equal or less than 100MB'
     }
   },
   onAfterUpload (image) {
-    // Move file to GridFS
-    Object.keys(image.versions).forEach(versionName => {
-      const metadata = {versionName, imageId: image._id, storedAt: new Date()} // Optional
-      const writeStream = gfs.createWriteStream({filename: image.name, metadata})
+    convertFormats(image, (err, data = []) => {
+      if (err) {
+        console.error(err)
+      }
 
-      fs.createReadStream(image.versions[versionName].path).pipe(writeStream)
+      data.forEach(entry => {
+        const stats = fs.statSync(entry.path)
+        const upd = {$set: {}}
+        upd['$set']['versions.' + entry.extension] = {
+          path: entry.path,
+          size: stats.size,
+          type: stats.type,
+          name: entry.name,
+          extension: entry.extension
+        }
+        SoundFiles.update(image._id, upd)
+      })
 
-      writeStream.on('close', Meteor.bindEnvironment(file => {
-        const property = `versions.${versionName}.meta.gridFsFileId`
+      // Move file to GridFS
+      Object.keys(image.versions).forEach(versionName => {
+        const metadata = {versionName, imageId: image._id, storedAt: new Date()} // Optional
+        const writeStream = gfs.createWriteStream({filename: image.name, metadata})
 
-        // If we store the ObjectID itself, Meteor (EJSON?) seems to convert it to a
-        // LocalCollection.ObjectID, which GFS doesn't understand.
-        this.collection.update(image._id, {$set: {[property]: file._id.toString()}})
-        this.unlink(this.collection.findOne(image._id), versionName) // Unlink files from FS
-      }))
+        fs.createReadStream(image.versions[versionName].path).pipe(writeStream)
+
+        writeStream.on('close', Meteor.bindEnvironment(file => {
+          const property = `versions.${versionName}.meta.gridFsFileId`
+
+          // If we store the ObjectID itself, Meteor (EJSON?) seems to convert it to a
+          // LocalCollection.ObjectID, which GFS doesn't understand.
+          this.collection.update(image._id, {$set: {[property]: file._id.toString()}})
+          this.unlink(this.collection.findOne(image._id), versionName) // Unlink files from FS
+        }))
+      })
     })
   },
   onAfterRemove (images) {

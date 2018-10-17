@@ -6,7 +6,7 @@ Exploring an efficient way of caching audio files for client devices (browser, m
 ## Features to explore:
 
 * [x] Upload using meteor files
-* [ ] Server side conversion to .webm format using ffmpeg
+* [x] Server side conversion to ogg/mp4/webm formats using ffmpeg
 * [x] Download audio files from gridfs
 * [x] Playback using howler
 * [x] Stream files as partial response (HTTP 206) using HTMLAudio
