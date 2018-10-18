@@ -198,7 +198,12 @@ Template.play.onDestroyed(function () {
 
 Template.play.helpers({
   sounds () {
-    return Sounds.collection.find()
+     const cursor = Sounds.collection.find()
+    if (cursor && cursor.count() > 0) {
+       return cursor
+    } else {
+       return null
+    }
   },
   getFile (fileId) {
     check(fileId, String)
@@ -242,7 +247,25 @@ Template.play.helpers({
     check(fileId, String)
     return howls[fileId]
   },
-
+  subversions (file) {
+    const {versions} = file
+    return Object.keys(versions)
+      .sort((a,b) => {
+        if (a === 'original') return -1
+        if (b === 'original') return 1
+        return 0
+      })
+      .map(versionName => {
+        const obj = versions[versionName]
+        if (versionName === 'original') {
+          obj.original = true
+          obj.name = file.name
+        }
+        obj.version = versionName
+        obj._id = file._id
+        return obj
+      })
+  },
   progress (fileId) {
     const sound = howls[fileId]
     if (!sound) return 0

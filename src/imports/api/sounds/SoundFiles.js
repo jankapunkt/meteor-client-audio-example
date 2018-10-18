@@ -174,6 +174,7 @@ function interceptDownloadServe (http, fileRef, vRef, version, readableStream, r
 export const SoundFiles = new FilesCollection({
   collectionName: 'soundFiles',
   allowClientCode: false,
+  debug: true,
   onBeforeUpload (file) {
     if (file.size <= 104857600 && /mp3|wav|ogg|mp4|webm/i.test(file.ext)) {
       return true
@@ -193,27 +194,37 @@ export const SoundFiles = new FilesCollection({
         upd['$set']['versions.' + entry.extension] = {
           path: entry.path,
           size: stats.size,
-          type: stats.type,
+          type: entry.type,
           name: entry.name,
           extension: entry.extension
         }
         SoundFiles.update(image._id, upd)
       })
 
+      const updatedImage = SoundFiles.findOne(image._id)
+      
       // Move file to GridFS
-      Object.keys(image.versions).forEach(versionName => {
-        const metadata = {versionName, imageId: image._id, storedAt: new Date()} // Optional
-        const writeStream = gfs.createWriteStream({filename: image.name, metadata})
-
-        fs.createReadStream(image.versions[versionName].path).pipe(writeStream)
+      Object.keys(updatedImage.versions).forEach(versionName => {
+        const metadata = {versionName, updatedImageId: updatedImage._id, storedAt: new Date()} // Optional
+        const writeStream = gfs.createWriteStream({filename: updatedImage.name, metadata})
+        const versionPath = updatedImage.versions[versionName].path
+        if (this.debug) {
+          console.log(`[${versionName}] -> gfs writeStream on path [${versionPath}]`)
+        }
+        fs.createReadStream(versionPath).pipe(writeStream)
 
         writeStream.on('close', Meteor.bindEnvironment(file => {
+          const gfsId = file._id.toString()
+
+          if (this.debug) {
+            console.log(`[${versionName}] -> writestream closed with gfsId [${gfsId}] `)
+          }
           const property = `versions.${versionName}.meta.gridFsFileId`
 
           // If we store the ObjectID itself, Meteor (EJSON?) seems to convert it to a
           // LocalCollection.ObjectID, which GFS doesn't understand.
-          this.collection.update(image._id, {$set: {[property]: file._id.toString()}})
-          this.unlink(this.collection.findOne(image._id), versionName) // Unlink files from FS
+          this.collection.update(updatedImage._id, {$set: {[property]: gfsId}})
+          this.unlink(this.collection.findOne(updatedImage._id), versionName) // Unlink files from FS
         }))
       })
     })

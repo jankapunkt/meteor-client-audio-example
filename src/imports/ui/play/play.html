@@ -6,11 +6,10 @@
                      aria-valuemin="0" aria-valuemax="100"></div>
             {{/with}}
         </div>
-    {{else}}
+    {{else if sounds}}
         <div class="progress" style="height: 20px;"></div>
     {{/with}}
     <p></p>
-
     {{#with sounds}}
         <table class="table table-hover outer-border">
             <thead>
@@ -28,12 +27,10 @@
             {{#each this}}
                 <!-- get file from SoundFiles -->
                 {{#with getFile this.fileId}}
-                    {{log this}}
-                    {{#each values this.versions}}
+                    {{#each subversions this}}
                         <tr class="{{#if isCurrent this._id}}table-primary{{/if}}">
-
                             <!-- filename -->
-                            <td class="font-weight-bold">
+                            <td class="{{#if this.original}}font-weight-bold{{else}}text-muted{{/if}}">
                                 <span>{{this.name}}</span>
                                 <a href class="delete-button" data-target="{{this._id}}">
                                     <i class="fa fa-fw fa-trash-o"></i>
