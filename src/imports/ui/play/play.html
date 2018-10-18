@@ -1,121 +1,143 @@
 <template name="play">
-    {{#with current}}
-        <div class="progress progress-active clickable" style="height: 20px;">
-            {{#with progress this}}
-                <div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-            {{/with}}
-        </div>
-    {{else if sounds}}
-        <div class="progress" style="height: 20px;"></div>
-    {{/with}}
-    <p></p>
-    {{#with sounds}}
-        <table class="table table-hover outer-border">
-            <thead>
-            <tr>
-                <th class="text-left">Filename</th>
-                <th class="text-right">Size</th>
-                <th class="text-center">Loaded</th>
-                <th class="text-center">Cached</th>
-                <th class="text-center"></th>
-                <th class="text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- each sound of sounds -->
-            {{#each this}}
-                <!-- get file from SoundFiles -->
-                {{#with getFile this.fileId}}
-                    {{#each subversions this}}
-                        <tr class="{{#if isCurrent this._id}}table-primary{{/if}}">
-                            <!-- filename -->
-                            <td class="{{#if this.original}}font-weight-bold{{else}}text-muted{{/if}}">
-                                <span>{{this.name}}</span>
-                                <a href class="delete-button" data-target="{{this._id}}">
-                                    <i class="fa fa-fw fa-trash-o"></i>
-                                </a>
-                            </td>
+    {{#if templateReady}}
+        {{#with current}}
+            <div class="progress progress-active clickable" style="height: 20px;">
+                {{#with progress this}}
+                    <div class="progress-bar" role="progressbar" style="width: {{this}}%;" aria-valuenow="{{this}}"
+                         aria-valuemin="0" aria-valuemax="100"></div>
+                {{/with}}
+            </div>
+        {{else if sounds}}
+            <div class="progress" style="height: 20px;"></div>
+        {{/with}}
+        <p></p>
+        {{#with sounds}}
+            <table class="table table-hover outer-border">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-left">Filename</th>
+                    <th class="text-right">Size</th>
+                    <th class="text-center">Loaded</th>
+                    <th class="text-center">Cached</th>
+                    <th class="text-center"></th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- each sound of sounds -->
+                {{#each this}}
+                    <!-- get file from SoundFiles -->
+                    {{#with getFile this.fileId}}
+                        {{#each subversions this}}
+                            <tr class="{{#if isCurrent this._id}}table-primary{{/if}}">
 
-                            <!-- file size -->
-                            <td class="text-muted">{{toMB this.size}} MB</td>
-
-                            <!-- is loaded into memory using instance.load(fileId) -->
-                            <td class="text-center">
-                                {{#if loaded this._id}}
-                                    <i class="fa fa-fw fa-check"></i>
-                                {{else}}
-                                    <a href class="load-button" data-target="{{this._id}}">
-                                        <i class="fa fa-fw fa-refresh {{#if loading this._id}}fa-spin{{/if}}"></i>
+                                <td class="text-center">
+                                {{#if this.original}}
+                                    <a href class="toggle-subversionsbutton" data-target="{{../_id}}">
+                                        {{#if showSubversions ../_id}}
+                                            <i class="fa fa-fw fa-caret-down"></i>
+                                        {{else}}
+                                            <i class="fa fa-fw fa-caret-right"></i>
+                                        {{/if}}
                                     </a>
                                 {{/if}}
-                            </td>
+                                </td>
 
-                            <!-- is cached as blob into a local storage -->
-                            <td class="text-center">
-                                {{#if isCached this._id}}
-                                    <i class="fa fa-fw fa-check"></i>
-                                {{else}}
-                                    {{#if caching this._id}}
-                                        <i class="fa fa-fw fa-refresh fa-spin text-muted"></i> {{cacheProgress
-                                            this._id}}%
+                                <!-- filename -->
+                                <td class="{{#if this.original}}font-weight-bold{{else}}text-muted{{/if}}">
+                                    <span>{{this.name}}</span>
+                                    <a href class="delete-button" data-target="{{this._id}}">
+                                        <i class="fa fa-fw fa-trash-o"></i>
+                                    </a>
+                                </td>
+
+                                <!-- file size -->
+                                <td class="text-muted">{{toMB this.size}} MB</td>
+
+                                <!-- is loaded into memory using instance.load(fileId) -->
+                                <td class="text-center">
+                                    {{#if loaded this._id}}
+                                        <i class="fa fa-fw fa-check"></i>
                                     {{else}}
-                                        <a href class="cache-button" data-target="{{this._id}}">
-                                            <i class="fa fa-fw fa-refresh"></i>
+                                        <a href class="load-button" data-target="{{this._id}}">
+                                            <i class="fa fa-fw fa-refresh {{#if loading this._id}}fa-spin{{/if}}"></i>
                                         </a>
                                     {{/if}}
-                                {{/if}}
-                            </td>
+                                </td>
 
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-default download-button {{#if caching
-                                                                                            this._id}}disabled{{/if}}"
-                                        data-target="{{this._id}}">
-                                    <i class="fa fa-fw fa-download"></i>
-                                </button>
-                            </td>
-                            <td class="text-right">
-
-                                {{#if isCurrent this._id}}
-                                    {{#if loaded this._id}}
-                                        <button class="btn btn-sm btn-default stop-button" data-target="{{this._id}}">
-                                            <i class="fa fa-fw fa-stop"></i>
-                                        </button>
-                                        {{#if isPlaying this._id}}
-                                            <button class="btn btn-sm btn-default pause-button"
-                                                    data-target="{{this._id}}">
-                                                <i class="fa fa-fw fa-pause"></i>
-                                            </button>
+                                <!-- is cached as blob into a local storage -->
+                                <td class="text-center">
+                                    {{#if isCached this._id}}
+                                        <i class="fa fa-fw fa-check"></i>
+                                    {{else}}
+                                        {{#if caching this._id}}
+                                            <i class="fa fa-fw fa-refresh fa-spin text-muted"></i> {{cacheProgress
+                                                this._id}}%
                                         {{else}}
-                                            <button class="btn btn-sm btn-default play-button"
+                                            <a href class="cache-button" data-target="{{this._id}}">
+                                                <i class="fa fa-fw fa-refresh"></i>
+                                            </a>
+                                        {{/if}}
+                                    {{/if}}
+                                </td>
+
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-default download-button {{#if caching this._id}}disabled{{/if}}"
+                                            data-target="{{this._id}}">
+                                        <i class="fa fa-fw fa-download"></i>
+                                    </button>
+                                </td>
+                                <td class="text-right">
+
+                                    {{#if isCurrent this._id}}
+                                        {{#if loaded this._id}}
+                                            <button class="btn btn-sm btn-default stop-button"
                                                     data-target="{{this._id}}">
-                                                <i class="fa fa-fw fa-play"></i>
+                                                <i class="fa fa-fw fa-stop"></i>
+                                            </button>
+                                            {{#if isPlaying this._id}}
+                                                <button class="btn btn-sm btn-default pause-button"
+                                                        data-target="{{this._id}}">
+                                                    <i class="fa fa-fw fa-pause"></i>
+                                                </button>
+                                            {{else}}
+                                                <button class="btn btn-sm btn-default play-button"
+                                                        data-target="{{this._id}}">
+                                                    <i class="fa fa-fw fa-play"></i>
+                                                </button>
+                                            {{/if}}
+                                        {{else}}
+                                            <button class="btn btn-sm btn-default">
+                                                <i class="fa fa-spinner fa-pulse"></i>
                                             </button>
                                         {{/if}}
                                     {{else}}
-                                        <button class="btn btn-sm btn-default">
-                                            <i class="fa fa-spinner fa-pulse"></i>
+                                        <button class="btn btn-sm btn-default play-button" data-target="{{this._id}}">
+                                            <i class="fa fa-fw fa-play"></i>
                                         </button>
                                     {{/if}}
-                                {{else}}
-                                    <button class="btn btn-sm btn-default play-button" data-target="{{this._id}}">
-                                        <i class="fa fa-fw fa-play"></i>
-                                    </button>
-                                {{/if}}
 
-                                <button class="btn btn-sm btn-default stream-button" data-target="{{this._id}}">
-                                    <i class="fa fa-fw fa-cloud"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    {{/each}}
-                {{/with}}
-            {{/each}}
-            </tbody>
-        </table>
+                                    <button class="btn btn-sm btn-default stream-button" data-target="{{this._id}}">
+                                        <i class="fa fa-fw fa-cloud"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{/with}}
+                {{/each}}
+                </tbody>
+            </table>
+        {{else}}
+            <div class="jumbotron">
+                <p>No files in list. Add one to play.</p>
+            </div>
+        {{/with}}
     {{else}}
-        <div class="jumbotron">
-            <p>No files in list. Add one to play.</p>
+        <div class="jumbotron text-center">
+            <h1>
+                <i class="fa fa-fw fa-pulse fa-spinner"></i>
+            </h1>
         </div>
-    {{/with}}
+    {{/if}}
 </template>

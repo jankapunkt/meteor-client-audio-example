@@ -40,24 +40,16 @@ Template.play.onCreated(function onPlayCreated () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.state.set('loadState', {})
+  instance.state.set('showSubversions', {})
 
-  instance.autorun(() => {
-    if (SoundCache.size > 0 && Sounds.subscription && Sounds.subscription.ready()) {
-      Sounds.collection.find().fetch().forEach(doc => {
-        const {fileId} = doc
-        const file = SoundFiles.findOne(fileId)
-        SoundCache.load(fileId, (resource) => {
-          if (resource && !howls[fileId]) {
-            console.log("resource", resource)
-            instance.load(fileId, global.URL.createObjectURL(resource), [file.ext])
-            instance.loadState(fileId, {cached: true})
-          }
-        }, (err) => {
-          errorCallback(err)
-        })
-      })
+  instance.showSubversions = function showSubversions (fileId, value) {
+    const obj = instance.state.get('showSubversions')
+    if(typeof value !== 'undefined') {
+      obj[fileId] = value
+      instance.state.set('showSubversions', obj)
     }
-  })
+    return obj[fileId]
+  }
 
   instance.play = function play (fileId) {
     if (howls[fileId]) {
@@ -120,7 +112,7 @@ Template.play.onCreated(function onPlayCreated () {
 
   instance.load = function load (fileId, url, extensions) {
     instance.loadState(fileId, {loading: true})
-    console.log("load", fileId, url)
+    console.log('load', fileId, url)
     const sound = new Howl({
       src: [url],
       html5: true,
@@ -188,6 +180,30 @@ Template.play.onCreated(function onPlayCreated () {
 
   // initial clearing to setup variables
   instance.clear()
+
+
+  instance.autorun(() => {
+    if (Sounds.subscription && Sounds.subscription.ready()) {
+      if (SoundCache.size > 0) {
+        Sounds.collection.find().fetch().forEach(doc => {
+          const {fileId} = doc
+          const file = SoundFiles.findOne(fileId)
+          SoundCache.load(fileId, (resource) => {
+            if (resource && !howls[fileId]) {
+              console.log('resource', resource)
+              instance.load(fileId, global.URL.createObjectURL(resource), [file.ext])
+              instance.loadState(fileId, {cached: true})
+            }
+          }, (err) => {
+            errorCallback(err)
+          })
+        })
+      }
+      instance.state.set('subsComplete', true)
+    }
+  })
+
+  instance.state.set('instanceComplete', true)
 })
 
 // Meteor.connection._stream.on('message', console.log.bind(console))
@@ -197,12 +213,18 @@ Template.play.onDestroyed(function () {
 })
 
 Template.play.helpers({
+  templateReady () {
+    const subsComplete = Template.instance().state.get('subsComplete')
+    const instanceComplete = Template.instance().state.get('instanceComplete')
+    console.log("ready", subsComplete && instanceComplete)
+    return subsComplete && instanceComplete
+  },
   sounds () {
-     const cursor = Sounds.collection.find()
+    const cursor = Sounds.collection.find()
     if (cursor && cursor.count() > 0) {
-       return cursor
+      return cursor
     } else {
-       return null
+      return null
     }
   },
   getFile (fileId) {
@@ -249,22 +271,29 @@ Template.play.helpers({
   },
   subversions (file) {
     const {versions} = file
-    return Object.keys(versions)
-      .sort((a,b) => {
-        if (a === 'original') return -1
-        if (b === 'original') return 1
-        return 0
-      })
-      .map(versionName => {
-        const obj = versions[versionName]
-        if (versionName === 'original') {
-          obj.original = true
-          obj.name = file.name
-        }
-        obj.version = versionName
-        obj._id = file._id
-        return obj
-      })
+    const _showSubversions = Template.instance().state.get('showSubversions')[file._id]
+    const subversions = _showSubversions === true
+      ? Object.keys(versions)
+        .sort((a, b) => {
+          if (a === 'original') return -1
+          if (b === 'original') return 1
+          return 0
+        })
+      : Object.keys(versions)
+        .filter(version => version === 'original')
+    return subversions.map(versionName => {
+      const obj = versions[versionName]
+      if (versionName === 'original') {
+        obj.original = true
+        obj.name = file.name
+      }
+      obj.version = versionName
+      obj._id = `${file._id}-${obj.meta.gridFsFileId}`
+      return obj
+    })
+  },
+  showSubversions (fileId) {
+    return Template.instance().showSubversions(fileId)
   },
   progress (fileId) {
     const sound = howls[fileId]
@@ -338,7 +367,7 @@ Template.play.events({
         }
         saveResource(res)
       })
-    }else {
+    } else {
       const file = SoundFiles.findOne(fileId)
       tInstance.cache(fileId, saveResource)
     }
@@ -355,7 +384,12 @@ Template.play.events({
     const perc = (event.offsetX / target.clientWidth)
     tInstance.seek(perc)
   },
-
+  'click .toggle-subversionsbutton'(event, tInstance) {
+    event.preventDefault()
+    const fileId = tInstance.$(event.currentTarget).data('target')
+    const showSubversions = !!(tInstance.showSubversions(fileId))
+    tInstance.showSubversions(fileId, !showSubversions)
+  },
   'click .stream-button' (event, tInstance) {
     event.preventDefault()
 
@@ -368,40 +402,37 @@ Template.play.events({
     const mimeCodec = file.type
 
     if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-      const mediaSource = new MediaSource();
-      console.log(mediaSource.readyState); // closed
-      audio.src = URL.createObjectURL(mediaSource);
-      mediaSource.addEventListener('sourceopen', sourceOpen);
+      const mediaSource = new MediaSource()
+      console.log(mediaSource.readyState) // closed
+      audio.src = URL.createObjectURL(mediaSource)
+      mediaSource.addEventListener('sourceopen', sourceOpen)
     } else {
-      console.error('Unsupported MIME type or codec: ', mimeCodec);
+      console.error('Unsupported MIME type or codec: ', mimeCodec)
     }
 
     function sourceOpen (_) {
       //console.log(this.readyState); // open
-      const mediaSource = this;
-      const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+      const mediaSource = this
+      const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec)
       fetchAB(assetURL, function (buf) {
         sourceBuffer.addEventListener('updateend', function (_) {
-          mediaSource.endOfStream();
-          audio.play();
+          mediaSource.endOfStream()
+          audio.play()
           //console.log(mediaSource.readyState); // ended
-        });
-        sourceBuffer.appendBuffer(buf);
-      });
+        })
+        sourceBuffer.appendBuffer(buf)
+      })
     }
   }
 })
 
-
-
-
 function fetchAB (url, cb) {
-  console.log(url);
-  const xhr = new XMLHttpRequest;
-  xhr.open('get', url);
-  xhr.responseType = 'arraybuffer';
+  console.log(url)
+  const xhr = new XMLHttpRequest
+  xhr.open('get', url)
+  xhr.responseType = 'arraybuffer'
   xhr.onload = function () {
-    cb(xhr.response);
-  };
-  xhr.send();
+    cb(xhr.response)
+  }
+  xhr.send()
 }

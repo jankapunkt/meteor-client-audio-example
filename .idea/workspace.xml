@@ -19,29 +19,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="play.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="play.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="32" column="94" selection-start-line="32" selection-start-column="94" selection-end-line="32" selection-end-column="94" />
+            <state relative-caret-position="409">
+              <caret line="43" column="39" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="templateHelpers.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/imports/ui/helpers/templateHelpers.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="play.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="play.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="261" column="30" selection-start-line="261" selection-start-column="30" selection-end-line="261" selection-end-column="30" />
+            <state relative-caret-position="642">
+              <caret line="290" column="29" selection-start-line="290" selection-start-column="29" selection-end-line="290" selection-end-column="29" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -157,6 +148,11 @@
       <find>mime</find>
       <find>image</find>
       <find>this._id</find>
+      <find>subversions (</find>
+      <find>showSubs</find>
+      <find>_showSubversions</find>
+      <find>showSubversions</find>
+      <find>subversions</find>
     </findStrings>
     <replaceStrings>
       <replace>cache</replace>
@@ -195,8 +191,8 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/helpers/templateHelpers.js" />
-        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.html" />
+        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
       </list>
     </option>
   </component>
@@ -331,12 +327,12 @@
       <workItem from="1539585427956" duration="21515000" />
       <workItem from="1539758658851" duration="13272000" />
       <workItem from="1539844463209" duration="11000" />
-      <workItem from="1539844662127" duration="3995000" />
+      <workItem from="1539844662127" duration="8388000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53736000" />
+    <option name="totallyTimeSpent" value="58129000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="24" width="1922" height="1061" extended-state="6" />
@@ -694,16 +690,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="261" column="30" selection-start-line="261" selection-start-column="30" selection-end-line="261" selection-end-column="30" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/ui/helpers/templateHelpers.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -713,8 +699,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="32" column="94" selection-start-line="32" selection-start-column="94" selection-end-line="32" selection-end-column="94" />
+        <state relative-caret-position="409">
+          <caret line="43" column="39" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="642">
+          <caret line="290" column="29" selection-start-line="290" selection-start-column="29" selection-end-line="290" selection-end-column="29" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
