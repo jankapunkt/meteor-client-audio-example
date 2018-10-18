@@ -25,6 +25,7 @@
         {{#each sounds}}
             {{#with getFile this.fileId}}
                 {{log this}}
+                {{#each values this.versions}}
                 <tr class="{{#if isCurrent this._id}}table-primary{{/if}}">
 
                     <!-- filename -->
@@ -102,11 +103,12 @@
                         </button>
                     </td>
                 </tr>
-            {{else}}
-                <div class="jumbotron">
-                    <p>No files in list. Add one to play.</p>
-                </div>
+                    {{/each}}
             {{/with}}
+            {{else}}
+            <div class="jumbotron">
+                <p>No files in list. Add one to play.</p>
+            </div>
         {{/each}}
         </tbody>
     </table>
