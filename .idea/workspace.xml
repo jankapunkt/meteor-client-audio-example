@@ -22,8 +22,8 @@
       <file leaf-file-name="play.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="298" column="26" selection-start-line="298" selection-start-column="10" selection-end-line="298" selection-end-column="26" />
+            <state relative-caret-position="573">
+              <caret line="213" column="23" lean-forward="true" selection-start-line="213" selection-start-column="23" selection-end-line="213" selection-end-column="23" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="e#24#60#0" expanded="true" />
@@ -32,7 +32,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="play.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="play.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="585">
@@ -41,11 +41,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SoundFiles.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SoundFiles.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="17" column="37" lean-forward="true" selection-start-line="17" selection-start-column="37" selection-end-line="17" selection-end-column="37" />
+            <state relative-caret-position="255">
+              <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -77,9 +77,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js" />
-        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
         <option value="$PROJECT_DIR$/src/imports/ui/play/play.html" />
+        <option value="$PROJECT_DIR$/src/imports/ui/play/play.js" />
+        <option value="$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js" />
       </list>
     </option>
   </component>
@@ -193,12 +193,12 @@
       <option name="presentableId" value="Default" />
       <updated>1539862409679</updated>
       <workItem from="1539862411961" duration="623000" />
-      <workItem from="1540032853981" duration="4996000" />
+      <workItem from="1540032853981" duration="8383000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5619000" />
+    <option name="totallyTimeSpent" value="9006000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="24" width="1922" height="1061" extended-state="6" />
@@ -248,20 +248,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js">
+    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="17" column="37" lean-forward="true" selection-start-line="17" selection-start-column="37" selection-end-line="17" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="585">
+          <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="298" column="26" selection-start-line="298" selection-start-column="10" selection-end-line="298" selection-end-column="26" />
+        <state relative-caret-position="573">
+          <caret line="213" column="23" lean-forward="true" selection-start-line="213" selection-start-column="23" selection-end-line="213" selection-end-column="23" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="e#24#60#0" expanded="true" />
@@ -269,10 +266,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/imports/ui/play/play.html">
+    <entry file="file://$PROJECT_DIR$/src/imports/api/sounds/SoundFiles.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
+        <state relative-caret-position="255">
+          <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

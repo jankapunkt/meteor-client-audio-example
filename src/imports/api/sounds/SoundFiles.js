@@ -17,19 +17,37 @@ if (Meteor.isServer) {
 function convertFormats (image, callback) {
   let sourceFile = ffmpeg(image.path)
   sourceFile.noVideo() // use for audio-only
-
-  const data = ['ogg', 'mp4', 'webm'].map(function (extension) {
+  const paths = []
+  const endings = ['ogg', 'mp4', 'webm']
+  const data = endings.map(function (extension) {
     const name = image.name.replace(image.extension, extension)
     const path = `${image._storagePath}/${name}`
-    const type = mime.getType(extension)
+    const type = mime.getType(extension).replace('video', 'audio')
+    paths.push(path)
     sourceFile.audioCodec('libvorbis')
     sourceFile.output(path)
     return {extension, path, type, name}
   })
 
-  sourceFile.on('end', Meteor.bindEnvironment(() => callback(null, data)))
-  sourceFile.on('error', Meteor.bindEnvironment((err) => callback(err)))
+  const resCb = Meteor.bindEnvironment(() => callback(null, data))
+  const errCb = Meteor.bindEnvironment((err) => callback(err))
+
+  sourceFile.on('end', resCb)
+  sourceFile.on('error', errCb)
   sourceFile.run()
+}
+
+const asyncFFProbe = Meteor.isServer ? Meteor.wrapAsync(ffmpeg.ffprobe) : null
+
+function getCodec (path) {
+  let audioCodec = null
+  const metadata = asyncFFProbe(path)
+  metadata.streams.forEach(stream => {
+    if (stream.codec_type === 'audio') {
+      audioCodec = stream.codec_name
+    }
+  })
+  return audioCodec
 }
 
 /**
@@ -189,26 +207,36 @@ export const SoundFiles = new FilesCollection({
         console.error(err)
       }
 
+      // update meta entries
       data.forEach(entry => {
         const stats = fs.statSync(entry.path)
+        const codec = getCodec(entry.path)
         const upd = {$set: {}}
         upd['$set']['versions.' + entry.extension] = {
           path: entry.path,
           size: stats.size,
           type: entry.type,
           name: entry.name,
-          extension: entry.extension
+          extension: entry.extension,
+          codec: codec
         }
         SoundFiles.update(image._id, upd)
       })
 
+      // we need to re-load the document
+      // because we might have updated the
+      // versions entries.
       const updatedImage = SoundFiles.findOne(image._id)
-      
-      // Move file to GridFS
+
+      // Move file / version to GridFS
       Object.keys(updatedImage.versions).forEach(versionName => {
         const metadata = {versionName, updatedImageId: updatedImage._id, storedAt: new Date()} // Optional
         const writeStream = gfs.createWriteStream({filename: updatedImage.name, metadata})
         const versionPath = updatedImage.versions[versionName].path
+
+
+
+        // create gridfs writestreams
         if (this.debug) {
           console.log(`[${versionName}] -> gfs writeStream on path [${versionPath}]`)
         }

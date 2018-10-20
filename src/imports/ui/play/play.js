@@ -200,6 +200,7 @@ Template.play.onCreated(function onPlayCreated () {
 
   instance.autorun(() => {
     if (Sounds.subscription && Sounds.subscription.ready()) {
+      console.log(SoundFiles.find().fetch())
       if (SoundCache.size > 0) {
         Sounds.collection.find().fetch().forEach(doc => {
           const {fileId} = doc
