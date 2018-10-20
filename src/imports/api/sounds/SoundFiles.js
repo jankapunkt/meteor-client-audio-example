@@ -240,6 +240,7 @@ export const SoundFiles = new FilesCollection({
               [`versions.${versionName}`]: {
                 name: updatedImage.name,
                 type: updatedImage.type,
+                size: updatedImage.size,
                 codec: getCodec(versionPath),
                 isOriginal: true
               }
