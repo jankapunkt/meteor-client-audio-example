@@ -234,7 +234,19 @@ export const SoundFiles = new FilesCollection({
         const writeStream = gfs.createWriteStream({filename: updatedImage.name, metadata})
         const versionPath = updatedImage.versions[versionName].path
 
-
+        if (versionName === 'original') {
+          const updteOriginal = {
+            $set: {
+              [`versions.${versionName}`]: {
+                name: updatedImage.name,
+                type: updatedImage.type,
+                codec: getCodec(versionPath),
+                isOriginal: true
+              }
+            }
+          }
+          this.collection.update(updatedImage._id, updteOriginal)
+        }
 
         // create gridfs writestreams
         if (this.debug) {
