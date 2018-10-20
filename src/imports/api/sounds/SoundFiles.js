@@ -22,6 +22,7 @@ function convertFormats (image, callback) {
     const name = image.name.replace(image.extension, extension)
     const path = `${image._storagePath}/${name}`
     const type = mime.getType(extension)
+    sourceFile.audioCodec('libvorbis')
     sourceFile.output(path)
     return {extension, path, type, name}
   })

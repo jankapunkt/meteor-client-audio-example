@@ -28,6 +28,8 @@ const timer = {
     }
   }
 }
+const audioBase = new Audio()
+const hasMediaSource = 'MediaSource' in window
 
 const SoundStates = {
   loading: 'loading',
@@ -41,6 +43,7 @@ Template.play.onCreated(function onPlayCreated () {
   instance.state = new ReactiveDict()
   instance.state.set('loadState', {})
   instance.state.set('showSubversions', {})
+  instance.state.set('selectedSubversion', {})
 
   instance.showSubversions = function showSubversions (fileId, value) {
     const obj = instance.state.get('showSubversions')
@@ -51,21 +54,31 @@ Template.play.onCreated(function onPlayCreated () {
     return obj[fileId]
   }
 
+  instance.selectedSubversion = function selectedSubversion (fileId, version) {
+    const obj = instance.state.get('selectedSubversion')
+    if(typeof version !== 'undefined') {
+      obj[fileId] = version
+      instance.state.set('selectedSubversion', obj)
+    }
+    return obj[fileId]
+  }
+
   instance.play = function play (fileId) {
     if (howls[fileId]) {
       howls[fileId].play()
     } else {
       const file = SoundFiles.findOne(fileId)
-      const link = file.link()
+      const version = instance.selectedSubversion(fileId)
+      const link = file.link(version)
       const sound = instance.load(fileId, link)
       sound.play()
     }
-    instance.state.set('current', fileId)
+    instance.state.set('currentFile', fileId)
   }
 
   instance.seek = function (perc) {
     const cue = instance.state.get('cue')
-    const current = instance.state.get('current')
+    const current = instance.state.get('currentFile')
     const sound = howls[current]
     const duration = sound.duration()
     const progress = duration * perc
@@ -89,11 +102,14 @@ Template.play.onCreated(function onPlayCreated () {
 
   instance.stop = function stop (fileId) {
     const sound = howls[fileId]
-    sound.stop()
+    if (sound) {
+      sound.stop()
+    }
   }
 
   instance.clear = function clear (fileId) {
-    instance.state.set('current', null)
+    instance.state.set('currentFile', null)
+    instance.state.set('currentVersion', null)
     instance.state.set('playing', false)
     instance.state.set('cue', 0)
     timer.clear()
@@ -227,13 +243,22 @@ Template.play.helpers({
       return null
     }
   },
+  supportedType(type) {
+    return audioBase.canPlayType(type)
+  },
+  streamSupport (mimeCodec) {
+    return hasMediaSource && MediaSource.isTypeSupported(mimeCodec)
+  },
   getFile (fileId) {
     check(fileId, String)
     return SoundFiles.findOne(fileId)
   },
+  noEnding(name, ext) {
+    return name.replace(`.${ext}`, '')
+  },
   isPlaying (fileId) {
     check(fileId, String)
-    const current = Template.instance().state.get('current')
+    const current = Template.instance().state.get('currentFile')
     if (current !== fileId) return false
     return Template.instance().state.get('playing')
   },
@@ -263,7 +288,7 @@ Template.play.helpers({
     return state && state.loaded
   },
   current () {
-    return Template.instance().state.get('current')
+    return Template.instance().state.get('currentFile')
   },
   getSound (fileId) {
     check(fileId, String)
@@ -272,25 +297,9 @@ Template.play.helpers({
   subversions (file) {
     const {versions} = file
     const _showSubversions = Template.instance().state.get('showSubversions')[file._id]
-    const subversions = _showSubversions === true
-      ? Object.keys(versions)
-        .sort((a, b) => {
-          if (a === 'original') return -1
-          if (b === 'original') return 1
-          return 0
-        })
-      : Object.keys(versions)
-        .filter(version => version === 'original')
-    return subversions.map(versionName => {
-      const obj = versions[versionName]
-      if (versionName === 'original') {
-        obj.original = true
-        obj.name = file.name
-      }
-      obj.version = versionName
-      obj._id = `${file._id}-${obj.meta.gridFsFileId}`
-      return obj
-    })
+    if (!_showSubversions) return null
+
+    return Object.values(versions)
   },
   showSubversions (fileId) {
     return Template.instance().showSubversions(fileId)
@@ -304,7 +313,7 @@ Template.play.helpers({
   },
   isCurrent (fileId) {
     check(fileId, String)
-    return Template.instance().state.get('current') === fileId
+    return Template.instance().state.get('currentFile') === fileId
   }
 })
 
@@ -312,7 +321,7 @@ Template.play.events({
   'click .play-button' (event, tInstance) {
     event.preventDefault()
     const fileId = tInstance.$(event.currentTarget).data('target')
-    const current = tInstance.state.get('current')
+    const current = tInstance.state.get('currentFile')
 
     if (current && fileId !== current) {
       tInstance.stop(current)
