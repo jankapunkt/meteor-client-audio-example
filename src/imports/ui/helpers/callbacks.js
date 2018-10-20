@@ -32,10 +32,13 @@ export const callback = ({expErr = true, expRes = true, onErr, onRes}) => (err, 
 }
 
 export const errorCallback = (err) => {
+  if (typeof err === 'string') {
+    err = new Error(err)
+  }
   console.error(err)
   $.notify({
     // options
-    title: err.error || err.name,
+    title: err.error || err.name || err.title,
     message: err.reason || err.message,
   }, {
     // settings

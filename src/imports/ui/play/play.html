@@ -19,13 +19,12 @@
                     <th class="text-left">Filename</th>
                     <th class="text-center">Type</th>
                     <th class="text-center">Codec</th>
-                    <th class="text-center">HTML5</th>
-                    <th class="text-center">Stream</th>
                     <th class="text-right">Size</th>
                     <th class="text-center">Loaded</th>
                     <th class="text-center">Cached</th>
                     <th class="text-center"></th>
-                    <th class="text-right">Actions</th>
+                    <th class="text-center">Play</th>
+                    <th class="text-center">Stream</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -43,10 +42,10 @@
                                     {{/if}}
                                 </a>
                             </td>
-                            <td colspan="9" class="font-weight-bold">
+                            <td colspan="7" class="font-weight-bold">
                                 {{noEnding this.name this.ext}}
                             </td>
-                            <td class="text-right">
+                            <td class="text-center">
 
                                 {{#if isCurrent this._id}}
                                     {{#if loaded this._id}}
@@ -75,7 +74,9 @@
                                         <i class="fa fa-fw fa-play"></i>
                                     </button>
                                 {{/if}}
+                            </td>
 
+                            <td class="text-center">
                                 <button class="btn btn-sm btn-default stream-button" data-target="{{this._id}}">
                                     <i class="fa fa-fw fa-cloud"></i>
                                 </button>
@@ -83,14 +84,15 @@
                         </tr>
                         {{#each subversions this}}
                            <tr>
-                               <td></td>
+                               <td class="text-center">
+                                   <a href class="delete-button" data-target="{{../_id}}">
+                                       <i class="fa fa-fw fa-trash-o"></i>
+                                   </a>
+                               </td>
 
                                 <!-- filename -->
-                               <td>
+                               <td class="text-muted">
                                     <span>{{this.name}}</span>
-                                    <a href class="delete-button" data-target="{{../_id}}">
-                                        <i class="fa fa-fw fa-trash-o"></i>
-                                    </a>
                                 </td>
 
                                 <!-- file type -->
@@ -102,16 +104,6 @@
                                <td class="text-muted text-center">
                                    <span>{{this.codec}}</span>
                                </td>
-
-                                <!-- html5 support -->
-                                <td class="text-center">
-                                    <i class="fa fa-fw fa-{{#if supportedType this.type}}check{{else}}times{{/if}}"></i>
-                                </td>
-
-                                <!-- stream support -->
-                                <td class="text-center">
-                                    <i class="fa fa-fw fa-{{#if streamSupport this.type}}check{{else}}times{{/if}}"></i>
-                                </td>
 
                                 <!-- file size -->
                                 <td class="text-muted text-right">{{toMB this.size}} MB</td>
@@ -144,13 +136,29 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-default download-button {{#if caching
-                                                                                                ../_id}}disabled{{/if}}"
+                                    <a href class="download-button {{#if caching ../_id}}disabled{{/if}}"
                                             data-target="{{../_id}}">
                                         <i class="fa fa-fw fa-download"></i>
-                                    </button>
+                                    </a>
                                 </td>
-                               <td></td>
+
+                               <!-- html5 support -->
+                               <td class="text-center">
+                                   {{#if supportedType this.type}}
+                                       <i class="fa fa-fw fa-check"></i>
+                                   {{else}}
+                                       <i class="fa fa-fw fa-times text-muted"></i>
+                                   {{/if}}
+                               </td>
+
+                               <!-- stream support -->
+                               <td class="text-center">
+                                   {{#if streamSupport this.type this.codec}}
+                                       <i class="fa fa-fw fa-check"></i>
+                                   {{else}}
+                                       <i class="fa fa-fw fa-times text-muted"></i>
+                                   {{/if}}
+                               </td>
                             </tr>
                         {{/each}}
                     {{/with}}

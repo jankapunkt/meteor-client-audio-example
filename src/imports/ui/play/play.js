@@ -13,6 +13,7 @@ import './play.html'
 
 import { callback, errorCallback, wrap } from '../helpers/callbacks'
 import StreamLoader from '../../api/stream/StreamLoader'
+import { segmentedPlayback } from '../helpers/segmentPlayback'
 
 const updateInterval = 0.025
 const howls = {}
@@ -139,7 +140,8 @@ Template.play.onCreated(function onPlayCreated () {
         instance.loadState(fileId, {loading: false, loaded: true})
       },
       onloaderror (soundId, err) {
-        errorCallback(err)
+        console.log("url:", url)
+        errorCallback(new Error(err))
       },
       onend: function () {
         timer.clear()
@@ -156,7 +158,7 @@ Template.play.onCreated(function onPlayCreated () {
         }, updateInterval * 1000)
       },
       onplayerror (soundId, err) {
-        errorCallback(err)
+        errorCallback(new Error(err))
       },
       onpause: function () {
         timer.clear()
@@ -247,7 +249,8 @@ Template.play.helpers({
   supportedType(type) {
     return audioBase.canPlayType(type)
   },
-  streamSupport (mimeCodec) {
+  streamSupport (type, codec) {
+    const mimeCodec = `${type}; codecs="${codec}"`
     return hasMediaSource && MediaSource.isTypeSupported(mimeCodec)
   },
   getFile (fileId) {
@@ -405,34 +408,56 @@ Template.play.events({
 
     const fileId = tInstance.$(event.currentTarget).data('target')
     const file = SoundFiles.findOne(fileId)
-    const assetURL = file.link
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaSource
+    const versionNames = Object.keys(file.versions)
+    let target, targetCodec
+
+    for (const version of versionNames) {
+      const subversion = file.versions[version]
+      const mimeCodec = `${subversion.type}; codecs="${subversion.codec}"`
+      if (MediaSource.isTypeSupported(mimeCodec)) {
+        target = version
+        targetCodec = mimeCodec
+        break
+      }
+    }
+
+    if (!targetCodec) {
+      errorCallback('No codec suported to be streamed')
+      return
+    }
+
+    const assetURL = file.link(target)
+
+    /*
+    const audio = new Audio()
+    const mediaSource = new MediaSource()
+    console.log(mediaSource.readyState) // closed
+    audio.src = URL.createObjectURL(mediaSource)
+    audio.addEventListener('canplay', function () {
+      console.log('can play')
+      audio.play()
+    })
+    mediaSource.addEventListener('sourceopen', function sourceOpen (_) {
+      console.log(this, _); // open
+      const mediaSource = this
+      const sourceBuffer = mediaSource.addSourceBuffer(targetCodec)
+      sourceBuffer.addEventListener('updateend', function (_) {
+        mediaSource.endOfStream()
+        console.log(mediaSource.readyState); // ended
+      })
+
+      const streamLoader = new StreamLoader(assetURL, {step: 1024 * 8 }) // 8 kb chunks
+      streamLoader.on(StreamLoader.event.response, function (event) {
+        sourceBuffer.appendBuffer(event.response)
+      })
+      streamLoader.load()
+    })
+
+    */
 
     const audio = new Audio()
-    const mimeCodec = file.type
-
-    if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-      const mediaSource = new MediaSource()
-      console.log(mediaSource.readyState) // closed
-      audio.src = URL.createObjectURL(mediaSource)
-      mediaSource.addEventListener('sourceopen', sourceOpen)
-    } else {
-      console.error('Unsupported MIME type or codec: ', mimeCodec)
-    }
-
-    function sourceOpen (_) {
-      //console.log(this.readyState); // open
-      const mediaSource = this
-      const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec)
-      fetchAB(assetURL, function (buf) {
-        sourceBuffer.addEventListener('updateend', function (_) {
-          mediaSource.endOfStream()
-          audio.play()
-          //console.log(mediaSource.readyState); // ended
-        })
-        sourceBuffer.appendBuffer(buf)
-      })
-    }
+    segmentedPlayback(audio, assetURL, targetCodec)
+    $('body').append(audio)
   }
 })
 

@@ -207,7 +207,7 @@ export const SoundFiles = new FilesCollection({
         console.error(err)
       }
 
-      // update meta entries
+      // add subversions entries
       data.forEach(entry => {
         const stats = fs.statSync(entry.path)
         const codec = getCodec(entry.path)
@@ -241,6 +241,8 @@ export const SoundFiles = new FilesCollection({
                 name: updatedImage.name,
                 type: updatedImage.type,
                 size: updatedImage.size,
+                path: updatedImage.path,
+                extension: updatedImage.extension,
                 codec: getCodec(versionPath),
                 isOriginal: true
               }
