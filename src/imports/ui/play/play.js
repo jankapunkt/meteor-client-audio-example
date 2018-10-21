@@ -287,9 +287,13 @@ Template.play.helpers({
     return state && state.loading
   },
   loaded (fileId) {
-    check(fileId, String)
     const state = Template.instance().loadState(fileId)
     return state && state.loaded
+  },
+  loadSubversion (fileId, version) {
+    const state = Template.instance().loadState(fileId)
+    const selectedSubversion = Template.instance().selectedSubversion(fileId)
+    return state && state.loaded && selectedSubversion === version
   },
   current () {
     return Template.instance().state.get('currentFile')
@@ -332,6 +336,19 @@ Template.play.events({
       tInstance.clear()
     }
 
+    if (!tInstance.selectedSubversion(fileId)) {
+      // determine which subversion is supported
+      // and has the smallest size
+      const file = SoundFiles.findOne(fileId)
+      const version = Object.keys(file.versions)
+        .sort((a, b) => {
+          const versionA = file.versions[a]
+          const versionB = file.versions[b]
+          return versionA.size - versionB.size
+        })
+        .find(versionName => audioBase.canPlayType(file.versions[versionName].type))
+      tInstance.selectedSubversion(fileId, version)
+    }
     tInstance.play(fileId)
   },
   'click .delete-button' (event, tInstance) {
@@ -352,9 +369,13 @@ Template.play.events({
   },
   'click .load-button' (event, tInstance) {
     event.preventDefault()
-    const fileId = tInstance.$(event.currentTarget).data('target')
+    const target = tInstance.$(event.currentTarget)
+    const fileId = target.data('target')
+    const version = target.data('version')
     const file = SoundFiles.findOne(fileId)
-    tInstance.load(fileId, file.link())
+    tInstance.stop(fileId)
+    tInstance.selectedSubversion(fileId, version)
+    tInstance.load(fileId, file.link(version))
   },
   'click .cache-button' (event, tInstance) {
     event.preventDefault()
@@ -427,47 +448,8 @@ Template.play.events({
     }
 
     const assetURL = file.link(target)
-
-    /*
-    const audio = new Audio()
-    const mediaSource = new MediaSource()
-    console.log(mediaSource.readyState) // closed
-    audio.src = URL.createObjectURL(mediaSource)
-    audio.addEventListener('canplay', function () {
-      console.log('can play')
-      audio.play()
-    })
-    mediaSource.addEventListener('sourceopen', function sourceOpen (_) {
-      console.log(this, _); // open
-      const mediaSource = this
-      const sourceBuffer = mediaSource.addSourceBuffer(targetCodec)
-      sourceBuffer.addEventListener('updateend', function (_) {
-        mediaSource.endOfStream()
-        console.log(mediaSource.readyState); // ended
-      })
-
-      const streamLoader = new StreamLoader(assetURL, {step: 1024 * 8 }) // 8 kb chunks
-      streamLoader.on(StreamLoader.event.response, function (event) {
-        sourceBuffer.appendBuffer(event.response)
-      })
-      streamLoader.load()
-    })
-
-    */
-
     const audio = new Audio()
     segmentedPlayback(audio, assetURL, targetCodec)
     $('body').append(audio)
   }
 })
-
-function fetchAB (url, cb) {
-  console.log(url)
-  const xhr = new XMLHttpRequest
-  xhr.open('get', url)
-  xhr.responseType = 'arraybuffer'
-  xhr.onload = function () {
-    cb(xhr.response)
-  }
-  xhr.send()
-}

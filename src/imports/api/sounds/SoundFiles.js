@@ -218,6 +218,7 @@ export const SoundFiles = new FilesCollection({
           type: entry.type,
           name: entry.name,
           extension: entry.extension,
+          version: entry.extension,
           codec: codec
         }
         SoundFiles.update(image._id, upd)
@@ -243,6 +244,7 @@ export const SoundFiles = new FilesCollection({
                 size: updatedImage.size,
                 path: updatedImage.path,
                 extension: updatedImage.extension,
+                version: 'original',
                 codec: getCodec(versionPath),
                 isOriginal: true
               }
